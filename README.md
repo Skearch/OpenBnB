@@ -1,5 +1,5 @@
 # Openbnb
-Openbnb is an open-source platform for by businesses. It provides a complete solution for managing property listings, bookings, and user accounts. Whether you're a small business or an individual, Openbnb is designed to help you streamline your operations.
+Openbnb is an open-source platform for businesses. It provides a complete solution for managing property listings, bookings, and user accounts. Whether you're a small business or an individual, Openbnb is designed to help you streamline your operations.
 
 ## Features
 - User authentication with role-based access (Guest, Staff, Owner).
@@ -13,8 +13,8 @@ Openbnb is an open-source platform for by businesses. It provides a complete sol
 ## Installation
 1. Clone the repository:
 ```bash
-git clone https://github.com/skearch/openbnb.git
-cd Openbnb
+git clone https://github.com/Skearch/Openbnb.git
+cd openbnb
 ```
 
 2. Install dependencies:
@@ -22,7 +22,7 @@ cd Openbnb
 npm install
 ```
 
-3. Configure the environment variables: Create a .env file in the root directory with the following format:
+3. Configure the environment variables: Create a `.env` file in the root directory with the following format:
 ```bash
 PORT=3000
 DATABASE_URL=postgresql://username:password@localhost:5432/database_name
@@ -33,49 +33,49 @@ SMTP_USER=your_email@example.com
 SMTP_PASS=your_email_password
 ```
 
-4. Configure the application settings: Edit the config.json file in the root directory with the following format:
+4. Configure the application settings: Edit the `config.json` file in the root directory with the following format:
 ```json
 {
-    "Business": {
-        "Name": "Openbnb",
-        "Email": "openbnb@example.com",
-        "PhoneNumber": "+123 456 7890",
-        "SocialMedia": {
-            "Facebook": "https://www.facebook.com/yourbusiness",
-            "Instagram": "https://www.instagram.com/yourbusiness",
-            "Twitter": "https://www.twitter.com/yourbusiness"
-        }
-    },
-    "Website": {
-        "HeadTitle": "Openbnb - Book Your Perfect Stay",
-        "FooterDescription": "The platform to book your perfect stay.",
-        "Hero": {
-            "Title": "Book your perfect stay in minutes",
-            "Description": "The perfect getaway for everyone!",
-            "Button": "Find Your Stay!"
-        },
-        "Recommend": {
-            "Title": "Our Top Picks",
-            "Button": "Explore Listings"
-        },
-        "Reviews": {
-            "Title": "What People Say About Us",
-            "List": [
-                {
-                    "Name": "John Doe",
-                    "Review": "Openbnb made booking so easy! Highly recommend."
-                },
-                {
-                    "Name": "Jane Smith",
-                    "Review": "Great platform with amazing options!"
-                }
-            ]
-        },
-        "Subscribe": {
-            "Title": "Subscribe for updates and promotions!",
-            "Button": "Join Now"
-        }
+  "Business": {
+    "Name": "Openbnb",
+    "Email": "openbnb@example.com",
+    "PhoneNumber": "+123 456 7890",
+    "SocialMedia": {
+      "Facebook": "https://www.facebook.com/yourbusiness",
+      "Instagram": "https://www.instagram.com/yourbusiness",
+      "Twitter": "https://www.twitter.com/yourbusiness"
     }
+  },
+  "Website": {
+    "HeadTitle": "Openbnb - Book Your Perfect Stay",
+    "FooterDescription": "The platform to book your perfect stay.",
+    "Hero": {
+      "Title": "Book your perfect stay in minutes",
+      "Description": "The perfect getaway for everyone!",
+      "Button": "Find Your Stay!"
+    },
+    "Recommend": {
+      "Title": "Our Top Picks",
+      "Button": "Explore Listings"
+    },
+    "Reviews": {
+      "Title": "What People Say About Us",
+      "List": [
+        {
+          "Name": "John Doe",
+          "Review": "Openbnb made booking so easy! Highly recommend."
+        },
+        {
+          "Name": "Jane Smith",
+          "Review": "Great platform with amazing options!"
+        }
+      ]
+    },
+    "Subscribe": {
+      "Title": "Subscribe for updates and promotions!",
+      "Button": "Join Now"
+    }
+  }
 }
 ```
 
