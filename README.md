@@ -81,7 +81,7 @@ SMTP_PASS=your_email_password
 
 5. Run database migrations:
 ```bash
-npm run prisma:migrate
+npx prisma migrate dev --schema=src/models/schema.prisma
 ```
 
 6. Start the server:
