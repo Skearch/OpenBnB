@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        <%= config.Website.HeadTitle %>
+    </title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="../css/style.css" rel="stylesheet">
+</head>
+
+<body class="font-sans">
+    <%- include('../partials/navbar') %>
+        <main>
+            <section class="bg-custom text-white py-32 px-8 text-center">
+                <h2 class="text-4xl font-bold mb-6">
+                    <%= config.Website.Hero.Title %>
+                </h2>
+                <p class="text-lg mb-10">
+                    <%= config.Website.Hero.Description %>
+                </p>
+                <div class="flex justify-center space-x-4">
+                    <a href="/listing/browse" class="custom-call-to-action px-8 py-4 rounded-lg flex items-center space-x-2">
+                        <span>
+                            <%= config.Website.Hero.Button %>
+                        </span>
+                    </a>
+                </div>
+            </section>
+
+            <section class="py-16 px-8" id="recommend">
+                <h3 class="text-2xl font-bold mb-8 text-center">
+                    <%= config.Website.Recommend.Title %>
+                </h3>
+                <div class="flex flex-wrap justify-center gap-8">
+                    <% showcasedProperties.forEach(property=> { %>
+                        <div class="bg-white shadow-lg rounded-lg overflow-hidden w-80">
+                            <img src="<%= property.featuredImage ? 'data:image/jpeg;base64,' + Buffer.from(property.featuredImage).toString('base64') : 'https://placehold.co/300x200' %>"
+                                alt="<%= property.name %>" class="w-full h-48 object-cover" />
+                            <div class="p-4">
+                                <h4 class="text-lg font-semibold">
+                                    <%= property.name %>
+                                </h4>
+                                <p class="text-gray-600">
+                                    <%= property.currencySymbol %>
+                                        <%= property.price %> per night
+                                </p>
+                            </div>
+                        </div>
+                        <% }) %>
+                </div>
+                <div class="text-center mt-8">
+                    <a href="/listing/browse" class="hover:underline">
+                        <%= config.Website.Recommend.Button %>
+                    </a>
+                </div>
+            </section>
+
+            <section class="py-16 px-8 bg-gray-100" id="reviews">
+                <h3 class="text-2xl font-bold mb-8 text-center">
+                    <%= config.Website.Reviews.Title %>
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                    <% config.Website.Reviews.List.forEach(review=> { %>
+                        <div class="bg-white p-6 rounded-lg shadow-lg">
+                            <p class="text-gray-600">"<%= review.Review %>"</p>
+                            <p class="mt-4 font-semibold">
+                                <%= review.Name %>
+                            </p>
+                        </div>
+                        <% }) %>
+                </div>
+            </section>
+
+            <section class="py-16 px-8 bg-orange-100 text-center" id="subscribe">
+                <h3 class="text-2xl font-bold mb-4">
+                    <%= config.Website.Subscribe.Title %>
+                </h3>
+                <div class="flex justify-center space-x-4 max-w-md mx-auto">
+                    <input type="email" placeholder="Email" class="flex-1 p-3 border rounded-lg" />
+                    <button class="custom-call-to-action px-6 py-3 rounded-lg">
+                        <%= config.Website.Subscribe.Button %>
+                    </button>
+                </div>
+            </section>
+        </main>
+</body>
+
+</html>

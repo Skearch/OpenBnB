@@ -1,0 +1,88 @@
+html,
+body {
+    height: 100%;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+body {
+    flex: 1;
+}
+
+main {
+    flex: 1;
+}
+
+.header-custom {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    height: 64px;
+    background-color: #78685c;
+}
+
+.sidebar-custom {
+    background-color: #78685c;
+}
+
+.footer-custom {
+    background-color: #78685c;
+    margin-top: auto;
+}
+
+.brand-logo {
+    font-family: 'Arial', sans-serif;
+}
+
+.card {
+    margin-bottom: 20px;
+}
+
+.header-custom {
+    background-color: #78685c;
+}
+
+.bg-custom {
+    background-color: #78685c;
+}
+
+.anchor-dark-custom {
+    background-color: transparent;
+    color: #fff;
+}
+
+.anchor-dark-custom:hover {
+    background-color: lightgray;
+    color: #000;
+}
+
+.anchor-custom {
+    background-color: white;
+    color: #000;
+}
+
+.anchor-custom:hover {
+    background-color: lightgray;
+    color: #000;
+}
+
+.custom-button {
+    background-color: white;
+    color: #000;
+}
+
+.custom-button:hover {
+    background-color: lightgray;
+    color: #000;
+}
+
+.custom-call-to-action {
+    background-color: #ffe5b6;
+    color: #000;
+}
+
+.custom-call-to-action:hover {
+    background-color: #ffd999;
+    color: #000;
+}

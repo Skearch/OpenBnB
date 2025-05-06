@@ -1,0 +1,64 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url = env("DATABASE_URL")
+}
+
+model User {
+  id               Int @id @default(autoincrement())
+  email            String @unique
+  password         String
+  role             String
+  name             String
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  messagesReceived Message[] @relation("Receiver")
+  messagesSent     Message[] @relation("Sender")
+  properties       Property[]
+  reservations     Reservation[]
+}
+
+model Property {
+  id             Int @id @default(autoincrement())
+  ownerId        Int
+  name           String
+  description    String
+  price          Float
+  currencySymbol String @default("$")
+  address        String?       
+  availability   Json @default("{}")
+  showcase       Boolean @default(false)
+  featuredImage  Bytes?
+  images         Bytes[] @default([])
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  owner          User @relation(fields: [ownerId], references: [id])
+  reservations   Reservation[]
+}
+
+model Reservation {
+  id         Int @id @default(autoincrement())
+  propertyId Int
+  guestId    Int
+  startDate  DateTime
+  endDate    DateTime
+  status     String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  guest      User @relation(fields: [guestId], references: [id])
+  property   Property @relation(fields: [propertyId], references: [id])
+}
+
+model Message {
+  id         Int @id @default(autoincrement())
+  senderId   Int
+  receiverId Int
+  content    String
+  timestamp  DateTime @default(now())
+  isRead     Boolean @default(false)
+  receiver   User @relation("Receiver", fields: [receiverId], references: [id])
+  sender     User @relation("Sender", fields: [senderId], references: [id])
+}

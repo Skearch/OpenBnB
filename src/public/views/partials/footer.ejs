@@ -1,0 +1,28 @@
+<footer class="footer-custom text-white py-8 px-8">
+    <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div>
+            <h4 class="text-lg font-semibold mb-4">
+                <%= config.Business.Name %>
+            </h4>
+            <p>
+                <%= config.Website.Footer.Description %>
+            </p>
+        </div>
+        <div>
+            <h4 class="text-lg font-semibold mb-4">About Us</h4>
+            <a href="#" class="block hover:underline">Our Mission</a>
+        </div>
+        <div>
+            <h4 class="text-lg font-semibold mb-4">Learn More</h4>
+            <a href="#" class="block hover:underline">FAQ</a>
+            <a href="#" class="block hover:underline">Terms</a>
+        </div>
+        <div>
+            <h4 class="text-lg font-semibold mb-4">Contact</h4>
+            <p>Email: <%= config.Business.Email %>
+            </p>
+            <p>Phone: <%= config.Business.PhoneNumber %>
+            </p>
+        </div>
+    </div>
+</footer>
