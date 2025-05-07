@@ -23,7 +23,29 @@ main {
 }
 
 .sidebar-custom {
-    background-color: #78685c;
+    width: 250px;
+    transition: transform 0.3s ease-in-out;
+}
+
+.sidebar-custom.hidden {
+    transform: translateX(-100%);
+}
+
+@media (max-width: 768px) {
+    .sidebar-custom {
+        width: 200px;
+    }
+}
+
+.content-wrapper {
+    margin-left: 250px;
+    transition: margin-left 0.3s ease-in-out;
+}
+
+@media (max-width: 768px) {
+    .content-wrapper {
+        margin-left: 0;
+    }
 }
 
 .footer-custom {

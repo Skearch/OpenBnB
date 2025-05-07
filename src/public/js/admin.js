@@ -1,95 +1,75 @@
 document.addEventListener('DOMContentLoaded', async () => {
     const propertyList = document.getElementById('admin-property-list');
-    const addPropertyForm = document.getElementById('addPropertyForm');
-    const accountList = document.getElementById('account-list');
+    const editPropertyModal = document.getElementById('editPropertyModal');
+    const editPropertyForm = document.getElementById('editPropertyForm');
+    const closeEditModal = document.getElementById('closeEditModal');
+    const sidebar = document.querySelector('.sidebar-custom');
+    const toggleButton = document.getElementById('sidebarToggle');
+
+    toggleButton.addEventListener('click', () => {
+        sidebar.classList.toggle('hidden');
+    });
 
     if (propertyList) {
         try {
-            const response = await fetch('/api/admin/properties');
+            const response = await fetch('/api/property/listall');
             const properties = await response.json();
+
             properties.forEach(property => {
                 const row = `
-            <tr>
-              <td>${property.name}</td>
-              <td>${property.description}</td>
-              <td>${property.currencysymbol} ${property.price}</td>
-            </tr>`;
+                    <tr>
+                        <td>${property.name}</td>
+                        <td>${property.description}</td>
+                        <td>${property.currencySymbol} ${property.price}</td>
+                        <td>
+                            <button class="edit-btn bg-blue-500 text-white px-4 py-2 rounded" data-id="${property.id}" data-name="${property.name}" data-description="${property.description}" data-price="${property.price}" data-currency-symbol="${property.currencySymbol}" data-address="${property.address}">Edit</button>
+                        </td>
+                    </tr>`;
                 propertyList.innerHTML += row;
+            });
+
+            document.querySelectorAll('.edit-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const property = e.target.dataset;
+                    document.getElementById('editPropertyId').value = property.id;
+                    document.getElementById('editName').value = property.name;
+                    document.getElementById('editDescription').value = property.description;
+                    document.getElementById('editPrice').value = property.price;
+                    document.getElementById('editCurrencySymbol').value = property.currencySymbol;
+                    document.getElementById('editAddress').value = property.address || '';
+                    editPropertyModal.classList.remove('hidden');
+                });
             });
         } catch (error) {
             alert('Error loading properties');
         }
     }
 
-    if (addPropertyForm) {
-        addPropertyForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
+    closeEditModal.addEventListener('click', () => {
+        editPropertyModal.classList.add('hidden');
+    });
 
-            const formData = new FormData(addPropertyForm);
+    editPropertyForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
 
-            try {
-                const response = await fetch('/api/admin/listings', {
-                    method: 'POST',
-                    body: formData,
-                });
+        const formData = new FormData(editPropertyForm);
+        const propertyId = formData.get('id');
 
-                const data = await response.json();
-                if (response.ok) {
-                    window.location.reload();
-                } else {
-                    alert(data.message);
-                }
-            } catch (error) {
-                alert('Error adding property');
-            }
-        });
-    }
-
-    if (accountList) {
         try {
-            const response = await fetch('/api/admin/accounts');
-            const accounts = await response.json();
-            accounts.forEach(account => {
-                const row = `
-            <tr>
-              <td>${account.name}</td>
-              <td>${account.email}</td>
-              <td>
-                <select class="role-select" data-id="${account.id}">
-                  <option value="guest" ${account.role === 'guest' ? 'selected' : ''}>Guest</option>
-                  <option value="staff" ${account.role === 'staff' ? 'selected' : ''}>Staff</option>
-                  <option value="owner" ${account.role === 'owner' ? 'selected' : ''}>Owner</option>
-                </select>
-              </td>
-              <td><button class="btn update-role-btn" data-id="${account.id}">Update Role</button></td>
-            </tr>`;
-                accountList.innerHTML += row;
+            const response = await fetch(`/api/property/update/${propertyId}`, {
+                method: 'PUT',
+                body: formData,
             });
 
-            document.querySelectorAll('.update-role-btn').forEach(button => {
-                button.addEventListener('click', async (e) => {
-                    const userId = e.target.getAttribute('data-id');
-                    const role = document.querySelector(`.role-select[data-id="${userId}"]`).value;
-
-                    try {
-                        const response = await fetch(`/api/admin/accounts/${userId}/role`, {
-                            method: 'PUT',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ role }),
-                        });
-                        const data = await response.json();
-                        if (response.ok) {
-                            alert('Role updated successfully');
-                        } else {
-                            alert(data.message);
-                        }
-                    } catch (error) {
-                        alert('Error updating role');
-                    }
-                });
-            });
+            if (response.ok) {
+                alert('Property updated successfully');
+                window.location.reload();
+            } else {
+                const data = await response.json();
+                alert(data.message || 'Failed to update property');
+            }
         } catch (error) {
-            alert('Error loading accounts');
+            alert('Error updating property');
         }
-    }
+    });
 });

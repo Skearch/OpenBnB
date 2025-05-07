@@ -52,7 +52,15 @@ const login = [
                 process.env.JWT_SECRET,
                 { expiresIn: '15m' }
             );
+
+            const refreshToken = jwt.sign(
+                { id: user.id, role: user.role, name: user.name, email: user.email },
+                process.env.JWT_REFRESH_SECRET,
+                { expiresIn: '7d' }
+            );
+
             res.cookie('token', token, { httpOnly: true, sameSite: 'strict' });
+            res.cookie('refreshToken', refreshToken, { httpOnly: true, sameSite: 'strict' });
             res.json({ message: 'Logged in', user: { id: user.id, role: user.role } });
         } catch (error) {
             console.error('Login Error:', error);

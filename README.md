@@ -26,6 +26,7 @@ npm install
 ```bash
 PORT=3000
 DATABASE_URL=postgresql://username:password@localhost:5432/database_name
+JWT_REFRESH_SECRET=your_jwt_secret_refresh
 JWT_SECRET=your_jwt_secret
 SMTP_HOST=smtp.example.com
 SMTP_PORT=587

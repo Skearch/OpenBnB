@@ -3,7 +3,7 @@ const cookieParser = require('cookie-parser');
 const rateLimit = require('express-rate-limit');
 const dotenv = require('dotenv');
 const path = require('path');
-const routes = require('./routes/main');
+const routes = require('./routes/mainRoutes');
 
 dotenv.config();
 
@@ -18,8 +18,8 @@ app.use(express.json());
 app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100 }));
 
 app.use((req, res, next) => {
-  const authMiddleware = require('./middleware/authMiddleware');
-  authMiddleware()(req, res, () => {
+  const authenticationMiddleware = require('./middleware/authenticationMiddleware');
+  authenticationMiddleware()(req, res, () => {
     res.locals.config = require('../config.json');
     res.locals.user = req.user || null;
     next();
@@ -34,4 +34,4 @@ app.use((req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => console.log(`Website Local Host: http://localhost:${PORT}/`));

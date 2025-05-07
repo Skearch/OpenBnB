@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const password = document.getElementById('password').value;
 
             try {
-                const response = await fetch('/api/auth/login', {
+                const response = await fetch('/api/authentication/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email, password }),
@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const data = await response.json();
                 if (response.ok) {
                     localStorage.setItem('user', JSON.stringify(data.user));
-                    window.location.href = data.user.role === 'owner' ? '/dashboard' : '/';
+                    window.location.href = '/dashboard';
                 } else {
                     alert(data.message);
                 }
@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const name = document.getElementById('name').value;
 
             try {
-                const response = await fetch('/api/auth/register', {
+                const response = await fetch('/api/authentication/register', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email, password, name }),
