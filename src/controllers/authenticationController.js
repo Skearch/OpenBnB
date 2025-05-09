@@ -15,6 +15,19 @@ const loginSchema = Joi.object({
     password: Joi.string().required(),
 });
 
+const logout = [
+    async (req, res) => {
+        try {
+            res.clearCookie('token');
+            res.clearCookie('refreshToken');
+            res.redirect('/');
+        } catch (error) {
+            console.error('Logout Error:', error);
+            res.status(500).json({ message: 'Server error' });
+        }
+    }
+];
+
 const register = [
     validateInput(registerSchema),
     async (req, res) => {
@@ -69,4 +82,4 @@ const login = [
     }
 ];
 
-module.exports = { register, login };
+module.exports = { register, login, logout };

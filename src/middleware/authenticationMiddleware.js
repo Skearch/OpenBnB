@@ -22,12 +22,12 @@ const authenticationMiddleware = (role) => (req, res, next) => {
         if (err.name === 'TokenExpiredError' && refreshToken) {
             try {
                 const decodedRefresh = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
-                const token = jwt.sign(
-                    { id: user.id, role: user.role, name: user.name, email: user.email },
+                const newToken = jwt.sign(
+                    { id: decodedRefresh.id, role: decodedRefresh.role, name: decodedRefresh.name, email: decodedRefresh.email },
                     process.env.JWT_SECRET,
                     { expiresIn: '15m' }
                 );
-                res.cookie('token', token, { httpOnly: true, sameSite: 'strict' });
+                res.cookie('token', newToken, { httpOnly: true, sameSite: 'strict' });
                 req.user = decodedRefresh;
                 return next();
             } catch (refreshErr) {

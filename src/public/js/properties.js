@@ -2,13 +2,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     const propertyList = document.getElementById('admin-property-list');
     const editPropertyModal = document.getElementById('editPropertyModal');
     const editPropertyForm = document.getElementById('editPropertyForm');
-    const closeEditModal = document.getElementById('closeEditModal');
-    const sidebar = document.querySelector('.sidebar-custom');
-    const toggleButton = document.getElementById('sidebarToggle');
-
-    toggleButton.addEventListener('click', () => {
-        sidebar.classList.toggle('hidden');
-    });
 
     if (propertyList) {
         try {
@@ -45,13 +38,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    closeEditModal.addEventListener('click', () => {
-        editPropertyModal.classList.add('hidden');
-    });
-
     editPropertyForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 
+        print('Submitting form...');
         const formData = new FormData(editPropertyForm);
         const propertyId = formData.get('id');
 

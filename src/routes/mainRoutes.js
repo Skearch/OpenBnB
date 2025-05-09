@@ -5,6 +5,7 @@ const pagesRouter = express.Router();
 
 const authenticationRoutes = require('./authenticationRoutes');
 const propertyRoutes = require('./propertyRoutes');
+const dashboardRoutes = require('./dashboardRoutes');
 
 apiRouter.use('/authentication', authenticationRoutes);
 apiRouter.use('/property', propertyRoutes);
@@ -12,14 +13,7 @@ apiRouter.use('/property', propertyRoutes);
 pagesRouter.get('/account/register', (req, res) => res.render('pages/register'));
 pagesRouter.get('/account/login', (req, res) => res.render('pages/login'));
 
-pagesRouter.get('/dashboard', (req, res) => {
-    if (!req.user) return res.redirect('/account/login');
-    const role = req.user.role;
-    if (role === 'owner') return res.render('dashboard/admin');
-    if (role === 'staff') return res.render('dashboard/staff');
-    if (role === 'guest') return res.render('dashboard/guest');
-    return res.status(403).send('Access denied');
-});
+pagesRouter.use('/dashboard', dashboardRoutes);
 
 pagesRouter.get('/listing/browse', async (req, res) => {
     try {
