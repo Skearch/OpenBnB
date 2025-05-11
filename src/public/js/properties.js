@@ -2,6 +2,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     const propertyList = document.getElementById('admin-property-list');
     const editPropertyModal = document.getElementById('editPropertyModal');
     const editPropertyForm = document.getElementById('editPropertyForm');
+    const addPropertyForm = document.getElementById('addPropertyForm');
+    const closeEditModal = document.getElementById('closeEditModal');
 
     if (propertyList) {
         try {
@@ -15,9 +17,19 @@ document.addEventListener('DOMContentLoaded', async () => {
                         <td>${property.description}</td>
                         <td>${property.currencySymbol} ${property.price}</td>
                         <td>
-                            <button class="edit-btn bg-blue-500 text-white px-4 py-2 rounded" data-id="${property.id}" data-name="${property.name}" data-description="${property.description}" data-price="${property.price}" data-currency-symbol="${property.currencySymbol}" data-address="${property.address}">Edit</button>
+                            <button 
+                                class="edit-btn flex items-center justify-center rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200"
+                                data-id="${property.id}" 
+                                data-name="${property.name}" 
+                                data-description="${property.description}" 
+                                data-price="${property.price}" 
+                                data-currency-symbol="${property.currencySymbol}" 
+                                data-address="${property.address || ''}">
+                                Edit
+                            </button>
                         </td>
-                    </tr>`;
+                    </tr>
+                `;
                 propertyList.innerHTML += row;
             });
 
@@ -38,28 +50,60 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    editPropertyForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
+    if (editPropertyForm) {
+        editPropertyForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
 
-        print('Submitting form...');
-        const formData = new FormData(editPropertyForm);
-        const propertyId = formData.get('id');
+            const formData = new FormData(editPropertyForm);
+            const propertyId = formData.get('id');
 
-        try {
-            const response = await fetch(`/api/property/update/${propertyId}`, {
-                method: 'PUT',
-                body: formData,
-            });
+            try {
+                const response = await fetch(`/api/property/update/${propertyId}`, {
+                    method: 'PUT',
+                    body: formData,
+                });
 
-            if (response.ok) {
-                alert('Property updated successfully');
-                window.location.reload();
-            } else {
-                const data = await response.json();
-                alert(data.message || 'Failed to update property');
+                if (response.ok) {
+                    alert('Property updated successfully');
+                    location.reload();
+                } else {
+                    const data = await response.json();
+                    alert(data.message || 'Failed to update property');
+                }
+            } catch (error) {
+                alert('Error updating property');
             }
-        } catch (error) {
-            alert('Error updating property');
-        }
-    });
+        });
+    }
+
+    if (addPropertyForm) {
+        addPropertyForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const formData = new FormData(addPropertyForm);
+
+            try {
+                const response = await fetch('/api/property/create', {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                if (response.ok) {
+                    alert('Property created successfully');
+                    location.reload();
+                } else {
+                    const data = await response.json();
+                    alert(data.message || 'Failed to create property');
+                }
+            } catch (error) {
+                alert('Error creating property');
+            }
+        });
+    }
+
+    if (closeEditModal) {
+        closeEditModal.addEventListener('click', () => {
+            editPropertyModal.classList.add('hidden');
+        });
+    }
 });

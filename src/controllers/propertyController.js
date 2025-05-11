@@ -98,16 +98,21 @@ const create = [
     ]),
     validateInput(propertySchema),
     async (req, res) => {
+        if (!req.user) {
+            return res.status(401).json({ message: 'Unauthorized' });
+        }
+
         const { name, description, price, currencySymbol, address } = req.body;
 
         const featuredImage = req.files?.['featuredImage']?.[0]?.buffer || null;
+        const images = req.files?.['images']?.map(file => file.buffer) || [];
+
         if (!featuredImage) {
             return res.status(400).json({ message: 'Featured image is required.' });
         }
 
-        const images = req.files?.['images']?.map(file => file.buffer) || [];
         if (images.length < 1 || images.length > 4) {
-            return res.status(400).json({ message: 'You must upload at least 1 additional image.' });
+            return res.status(400).json({ message: 'You must upload between 1 and 4 additional images.' });
         }
 
         try {
@@ -124,12 +129,13 @@ const create = [
                     availability: { dates: [] },
                 },
             });
-            res.status(201).json({ message: 'Property created', property });
+
+            return res.status(201).json({ message: 'Property created successfully', property });
         } catch (error) {
             console.error('Error creating property:', error);
-            res.status(500).json({ message: 'Server error' });
+            return res.status(500).json({ message: 'Server error' });
         }
-    }
+    },
 ];
 
 module.exports = { listAll, create, listShowcase, update };

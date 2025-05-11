@@ -4,31 +4,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>
-        <%= config.Website.HeadTitle %>
+    <title>Dashboard - <%= config.Business.Name %>
     </title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link href="/css/style.css" rel="stylesheet">
 </head>
 
-<body class="font-sans">
-    <%- include('../partials/sidebar') %>
+<body class="font-sans bg-gray-100">
+    <div class="flex h-screen">
+        <aside class="w-64 bg-gray-800 text-white flex flex-col fixed top-0 left-0 h-screen">
+            <div class="p-4 border-b border-gray-700">
+                <h1 class="text-2xl font-bold mb-4">
+                    <%= config.Business.Name %>
+                </h1>
+            </div>
+            <nav class="flex-1 flex flex-col space-y-2 p-4">
+                <a href="/" class="block px-4 py-2 rounded hover:bg-gray-700">
+                    Home
+                </a>
+                <a href="/dashboard/properties" class="block px-4 py-2 rounded hover:bg-gray-700">
+                    Properties
+                </a>
+                <a href="/dashboard/accounts" class="block px-4 py-2 rounded hover:bg-gray-700">
+                    Accounts
+                </a>
+                <a href="/dashboard/staff" class="block px-4 py-2 rounded hover:bg-gray-700">
+                    Staff
+                </a>
+                <a href="/dashboard/guest" class="block px-4 py-2 rounded hover:bg-gray-700">
+                    Guest
+                </a>
+            </nav>
+            <div class="p-4 border-t border-gray-700">
+                <button id="logout-button" class="w-full bg-red-500 text-white px-4 py-2 rounded-lg">
+                    Logout
+                </button>
+            </div>
+        </aside>
 
-        <div class="content-wrapper">
-            <button id="sidebarToggle" class="fixed top-4 left-4 z-20 bg-gray-800 text-white p-2 rounded-lg md:hidden">
-                ☰
-            </button>
+        <div class="flex-1 flex flex-col ml-64">
+            <header class="bg-white shadow px-6 py-4 flex justify-between items-center sticky top-0 z-10">
+                <h2 class="text-xl font-semibold">Dashboard</h2>
+                <div class="flex items-center space-x-4">
+                    <span class="text-gray-600">Welcome, <%= user.name %></span>
+                </div>
+            </header>
 
-            <main class="flex-1 py-16 px-8">
+            <main class="flex-1 p-6 overflow-y-auto">
                 <h1 class="text-2xl font-bold text-center mb-6">Properties</h1>
                 <div class="space-y-8">
-                    <div>
+
+                    <div class="bg-white shadow rounded-lg p-6">
                         <table class="w-full border-collapse border border-gray-300">
-                            <thead>
+                            <thead class="bg-gray-100">
                                 <tr>
-                                    <th class="border border-gray-300 px-4 py-2">Name</th>
-                                    <th class="border border-gray-300 px-4 py-2">Description</th>
-                                    <th class="border border-gray-300 px-4 py-2">Price</th>
+                                    <th class="border border-gray-300 px-4 py-2 text-left">Name</th>
+                                    <th class="border border-gray-300 px-4 py-2 text-left">Description</th>
+                                    <th class="border border-gray-300 px-4 py-2 text-left">Price</th>
+                                    <th class="border border-gray-300 px-4 py-2 text-left">Actions</th>
                                 </tr>
                             </thead>
                             <tbody id="admin-property-list">
@@ -38,7 +70,7 @@
                     </div>
 
                     <div id="editPropertyModal"
-                        class="hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
+                        class="hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-50">
                         <div class="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
                             <h2 class="text-xl font-bold mb-4">Edit Property</h2>
                             <form id="editPropertyForm" class="space-y-4" enctype="multipart/form-data">
@@ -67,77 +99,77 @@
                                 <div>
                                     <label for="editAddress" class="block text-sm font-medium">Address</label>
                                     <input type="text" id="editAddress" name="address"
-                                        class="w-full border rounded-lg p-2" />
+                                        class="w-full border rounded-lg p-2" required />
                                 </div>
                                 <div>
                                     <label for="editFeaturedImage" class="block text-sm font-medium">Featured
                                         Image</label>
                                     <input type="file" id="editFeaturedImage" name="featuredImage"
-                                        class="w-full border rounded-lg p-2" />
+                                        class="w-full border rounded-lg p-2" required />
                                 </div>
                                 <div>
-                                    <label for="editImages" class="block text-sm font-medium">Additional
-                                        Images</label>
+                                    <label for="editImages" class="block text-sm font-medium">Additional Images</label>
                                     <input type="file" id="editImages" name="images"
-                                        class="w-full border rounded-lg p-2" multiple />
+                                        class="w-full border rounded-lg p-2" multiple required />
                                 </div>
-                                <button type="submit" class="custom-call-to-action w-full py-2 rounded-lg">Save
-                                    Changes</button>
+                                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-lg w-full">
+                                    Save Changes
+                                </button>
                             </form>
-                            <button id="closeEditModal" class="mt-4 w-full py-2 bg-gray-300 rounded-lg">Cancel</button>
+                            <button id="closeEditModal"
+                                class="mt-4 w-full py-2 bg-gray-300 rounded-lg text-center">Cancel</button>
                         </div>
                     </div>
 
-                    <div>
+                    <div class="bg-white shadow rounded-lg p-6">
                         <h2 class="text-xl font-semibold mb-4">Add Property</h2>
-                        <form id="addPropertyForm" class="space-y-4" enctype="multipart/form-data" method="POST">
+                        <form id="addPropertyForm" class="space-y-4" enctype="multipart/form-data">
                             <div>
-                                <label for="name" class="block text-sm font-medium">Name</label>
-                                <input type="text" id="name" name="name" class="w-full border rounded-lg p-2" required>
+                                <label for="addName" class="block text-sm font-medium">Name</label>
+                                <input type="text" id="addName" name="name" class="w-full border rounded-lg p-2"
+                                    required />
                             </div>
                             <div>
-                                <label for="description" class="block text-sm font-medium">Description</label>
-                                <input type="text" id="description" name="description"
-                                    class="w-full border rounded-lg p-2" required>
+                                <label for="addDescription" class="block text-sm font-medium">Description</label>
+                                <input type="text" id="addDescription" name="description"
+                                    class="w-full border rounded-lg p-2" required />
                             </div>
                             <div>
-                                <label for="price" class="block text-sm font-medium">Price</label>
-                                <input type="number" id="price" name="price" class="w-full border rounded-lg p-2"
-                                    required>
+                                <label for="addPrice" class="block text-sm font-medium">Price</label>
+                                <input type="number" id="addPrice" name="price" class="w-full border rounded-lg p-2"
+                                    required />
                             </div>
                             <div>
-                                <label for="address" class="block text-sm font-medium">Address</label>
-                                <input type="text" id="address" name="address" class="w-full border rounded-lg p-2"
-                                    required>
+                                <label for="addCurrencySymbol" class="block text-sm font-medium">Currency Symbol</label>
+                                <input type="text" id="addCurrencySymbol" name="currencySymbol"
+                                    class="w-full border rounded-lg p-2" minlength="1" maxlength="3" required />
                             </div>
                             <div>
-                                <label for="featuredImage" class="block text-sm font-medium">Featured Image
-                                    (300x200)</label>
-                                <input type="file" id="featuredImage" name="featuredImage"
-                                    class="w-full border rounded-lg p-2" required>
+                                <label for="addAddress" class="block text-sm font-medium">Address</label>
+                                <input type="text" id="addAddress" name="address" class="w-full border rounded-lg p-2"
+                                    required />
                             </div>
                             <div>
-                                <label for="images" class="block text-sm font-medium">Additional Images
-                                    (300x200) (Min. 1, Max. 4)</label>
-                                <input type="file" id="images" name="images" class="w-full border rounded-lg p-2"
-                                    multiple required>
+                                <label for="addFeaturedImage" class="block text-sm font-medium">Featured Image</label>
+                                <input type="file" id="addFeaturedImage" name="featuredImage"
+                                    class="w-full border rounded-lg p-2" required />
                             </div>
                             <div>
-                                <label for="currencySymbol" class="block text-sm font-medium">Currency
-                                    Symbol</label>
-                                <input type="text" id="currencySymbol" name="currencySymbol"
-                                    class="w-full border rounded-lg p-2" minlength="1" maxlength="3" required>
+                                <label for="addImages" class="block text-sm font-medium">Additional Images</label>
+                                <input type="file" id="addImages" name="images" class="w-full border rounded-lg p-2"
+                                    multiple required />
                             </div>
-                            <button type="submit" class="custom-call-to-action w-full py-2 rounded-lg">Add
-                                Property</button>
+                            <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded-lg w-full">
+                                Add Property
+                            </button>
                         </form>
                     </div>
                 </div>
             </main>
         </div>
+    </div>
 
-        <script src="../js/properties.js"></script>
-        <script src="../js/script.js"></script>
+    <script src="../js/properties.js"></script>
 </body>
 
 </html>

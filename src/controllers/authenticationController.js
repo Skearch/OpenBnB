@@ -82,4 +82,4 @@ const login = [
     }
 ];
 
-module.exports = { register, login, logout };
+module.exports = { register, login };

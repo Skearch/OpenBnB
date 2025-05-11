@@ -6,11 +6,11 @@ const redirect = [
 
             switch (role) {
                 case "owner":
-                    return res.render('dashboard/properties');
+                    return res.redirect('/dashboard/overview');
                 case "staff":
-                    return res.render('dashboard/staff');
+                    return res.redirect('/dashboard/staff');
                 case "guest":
-                    return res.render('dashboard/guest');
+                    return res.redirect('/dashboard/guest');
             }
 
             return res.status(403).send('Access denied');
@@ -21,4 +21,8 @@ const redirect = [
     }
 ];
 
-module.exports = { redirect };
+const properties = [(req, res) => res.render('dashboard/properties')];
+const accounts = [(req, res) => res.render('dashboard/accounts')];
+const overview = [(req, res) => res.render('dashboard/overview')];
+
+module.exports = { redirect, properties, accounts, overview };

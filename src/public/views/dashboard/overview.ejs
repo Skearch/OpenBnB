@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - <%= config.Business.Name %>
+    </title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+
+<body class="font-sans bg-gray-100">
+    <div class="flex h-screen">
+        <aside class="w-64 bg-gray-800 text-white flex flex-col fixed top-0 left-0 h-screen">
+            <div class="p-4 border-b border-gray-700">
+                <h1 class="text-2xl font-bold mb-4">
+                    <%= config.Business.Name %>
+                </h1>
+            </div>
+            <nav class="flex-1 flex flex-col space-y-2 p-4">
+                <a href="/" class="block px-4 py-2 rounded hover:bg-gray-700">
+                    Home
+                </a>
+                <a href="/dashboard/overview" class="block px-4 py-2 rounded hover:bg-gray-700">
+                    Overview
+                </a>
+                <a href="/dashboard/properties" class="block px-4 py-2 rounded hover:bg-gray-700">
+                    Properties
+                </a>
+                <a href="/dashboard/accounts" class="block px-4 py-2 rounded hover:bg-gray-700">
+                    Accounts
+                </a>
+                <a href="/dashboard/staff" class="block px-4 py-2 rounded hover:bg-gray-700">
+                    Staff
+                </a>
+                <a href="/dashboard/guest" class="block px-4 py-2 rounded hover:bg-gray-700">
+                    Guest
+                </a>
+            </nav>
+            <div class="p-4 border-t border-gray-700">
+                <button id="logout-button" class="w-full bg-red-500 text-white px-4 py-2 rounded-lg">
+                    Logout
+                </button>
+            </div>
+        </aside>
+
+        <div class="flex-1 flex flex-col ml-64">
+            <header class="bg-white shadow px-6 py-4 flex justify-between items-center sticky top-0 z-10">
+                <h2 class="text-xl font-semibold">Dashboard</h2>
+                <div class="flex items-center space-x-4">
+                    <span class="text-gray-600">Welcome, <%= user.name %></span>
+                </div>
+            </header>
+
+
+            <main class="flex-1 p-6 overflow-y-auto">
+                <h1 class="text-2xl font-bold text-center mb-6">Dashboard Overview</h1>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+                    <div class="bg-white shadow rounded-lg p-6">
+                        <h3 class="text-lg font-semibold mb-4">Total Properties</h3>
+                        <p class="text-4xl font-bold text-gray-800">25</p>
+                    </div>
+
+                    <div class="bg-white shadow rounded-lg p-6">
+                        <h3 class="text-lg font-semibold mb-4">Active Reservations</h3>
+                        <p class="text-4xl font-bold text-gray-800">12</p>
+                    </div>
+
+                    <div class="bg-white shadow rounded-lg p-6">
+                        <h3 class="text-lg font-semibold mb-4">Messages</h3>
+                        <p class="text-4xl font-bold text-gray-800">8</p>
+                    </div>
+                </div>
+
+                <div class="mt-8">
+                    <h2 class="text-xl font-semibold mb-4">Recent Activity</h2>
+                    <div class="bg-white shadow rounded-lg p-6">
+                        <ul class="divide-y divide-gray-200">
+                            <li class="py-4 flex justify-between">
+                                <span>New property added: "Luxury Villa"</span>
+                                <span class="text-gray-500 text-sm">2 hours ago</span>
+                            </li>
+                            <li class="py-4 flex justify-between">
+                                <span>Reservation confirmed for "Beach House"</span>
+                                <span class="text-gray-500 text-sm">5 hours ago</span>
+                            </li>
+                            <li class="py-4 flex justify-between">
+                                <span>Message received from John Doe</span>
+                                <span class="text-gray-500 text-sm">1 day ago</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="../js/script.js"></script>
+</body>
+
+</html>
