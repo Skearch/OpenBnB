@@ -4,6 +4,7 @@ const validateInput = require('../middleware/validateInput');
 const bcrypt = require('bcrypt');
 
 const accountSchema = Joi.object({
+    id: Joi.number().optional(),
     name: Joi.string().required(),
     email: Joi.string().email().required(),
     password: Joi.string().min(6).optional(),

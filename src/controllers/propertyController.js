@@ -9,6 +9,7 @@ const propertySchema = Joi.object({
     price: Joi.number().required(),
     currencySymbol: Joi.string().min(1).max(3).required(),
     address: Joi.string().required(),
+    hours: Joi.number().integer().min(1).required(),
 });
 
 const upload = multer({
@@ -59,6 +60,32 @@ const update = [
         }
     },
 ];
+
+const getProperty = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const property = await prisma.property.findUnique({
+            where: { id: parseInt(id) },
+        });
+
+        if (!property) {
+            return res.status(404).json({ message: 'Property not found' });
+        }
+
+        property.featuredImage = property.featuredImage
+            ? Buffer.from(property.featuredImage).toString('base64')
+            : null;
+        property.images = property.images
+            ? property.images.map((image) => Buffer.from(image).toString('base64'))
+            : [];
+
+        res.json(property);
+    } catch (error) {
+        console.error('Error fetching property:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
 
 const remove = async (req, res) => {
     const { id } = req.params;
@@ -118,7 +145,7 @@ const create = [
             return res.status(401).json({ message: 'Unauthorized' });
         }
 
-        const { name, description, price, currencySymbol, address } = req.body;
+        const { name, description, price, currencySymbol, address, hours } = req.body;
 
         const featuredImage = req.files?.['featuredImage']?.[0]?.buffer || null;
         const images = req.files?.['images']?.map(file => file.buffer) || [];
@@ -140,6 +167,7 @@ const create = [
                     price: parseFloat(price),
                     currencySymbol,
                     address,
+                    hours: parseInt(hours),
                     featuredImage,
                     images,
                     availability: { dates: [] },
@@ -154,4 +182,4 @@ const create = [
     },
 ];
 
-module.exports = { listAll, create, listShowcase, update, remove };
+module.exports = { listAll, create, listShowcase, update, remove, getProperty };

@@ -1,3 +1,5 @@
+const { prisma } = require('../config/database');
+
 const redirect = [
     async (req, res) => {
         try {
@@ -21,8 +23,35 @@ const redirect = [
     }
 ];
 
-const properties = [(req, res) => res.render('dashboard/properties')];
-const accounts = [(req, res) => res.render('dashboard/accounts')];
-const overview = [(req, res) => res.render('dashboard/overview')];
+const formProperty = async (req, res) => {
+    const { id } = req.query;
+    let property = null;
 
-module.exports = { redirect, properties, accounts, overview };
+    if (id) {
+        property = await prisma.property.findUnique({
+            where: { id: parseInt(id) },
+        });
+
+        if (!property) {
+            return res.status(404).send('Property not found');
+        }
+
+        property.featuredImage = property.featuredImage
+            ? Buffer.from(property.featuredImage).toString('base64')
+            : null;
+        property.images = property.images
+            ? property.images.map((image) => Buffer.from(image).toString('base64'))
+            : [];
+    }
+
+    res.render('dashboard/formProperties', {
+        isEdit: !!id,
+        property,
+    });
+};
+
+const properties = [(req, res) => res.render('dashboard/properties')];
+const overview = [(req, res) => res.render('dashboard/overview')];
+const accounts = [(req, res) => res.render('dashboard/accounts')];
+
+module.exports = { redirect, properties, accounts, overview, formProperty };

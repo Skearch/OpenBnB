@@ -3,6 +3,8 @@ const cookieParser = require('cookie-parser');
 const rateLimit = require('express-rate-limit');
 const dotenv = require('dotenv');
 const path = require('path');
+const bcrypt = require('bcrypt');
+const { prisma } = require('./config/database');
 const routes = require('./routes/mainRoutes');
 
 dotenv.config();
@@ -25,6 +27,40 @@ app.use((req, res, next) => {
     next();
   });
 });
+
+const createStartupAdmin = async () => {
+  try {
+    const adminEmail = process.env.ADMIN_EMAIL;
+    const adminPassword = process.env.ADMIN_PASSWORD;
+    const adminName = process.env.ADMIN_NAME;
+
+    if (!adminEmail || !adminPassword || !adminName) {
+      console.warn('ADMIN_* environment variables are not set. Skipping admin account creation.');
+      return;
+    }
+
+    const existingAdmin = await prisma.user.findUnique({ where: { email: adminEmail } });
+
+    if (!existingAdmin) {
+      const hashedPassword = await bcrypt.hash(adminPassword, 10);
+      await prisma.user.create({
+        data: {
+          email: adminEmail,
+          password: hashedPassword,
+          name: adminName,
+          role: 'owner',
+        },
+      });
+      console.log('Startup admin account created successfully.');
+    } else {
+      console.log('Startup admin account already exists.');
+    }
+  } catch (error) {
+    console.error('Error creating startup admin account:', error);
+  }
+};
+
+createStartupAdmin();
 
 app.use('/api', routes.api);
 app.use('/', routes.pages);

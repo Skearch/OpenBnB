@@ -1,9 +1,6 @@
 document.addEventListener('DOMContentLoaded', async () => {
     const propertyList = document.getElementById('admin-property-list');
-    const editPropertyModal = document.getElementById('editPropertyModal');
-    const editPropertyForm = document.getElementById('editPropertyForm');
     const addPropertyForm = document.getElementById('addPropertyForm');
-    const closeEditModal = document.getElementById('closeEditModal');
     const editButton = document.getElementById('edit-button');
     const deleteButton = document.getElementById('delete-button');
 
@@ -60,31 +57,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     if (editButton) {
-        editButton.addEventListener('click', async () => {
+        editButton.addEventListener('click', () => {
             if (selectedProperties.length === 1) {
                 const propertyId = selectedProperties[0];
-                try {
-                    const response = await fetch(`/api/property/listall`);
-                    const properties = await response.json();
-                    const property = properties.find(p => p.id === parseInt(propertyId));
-
-                    if (property) {
-                        document.getElementById('editPropertyId').value = property.id;
-                        document.getElementById('editName').value = property.name;
-                        document.getElementById('editDescription').value = property.description;
-                        document.getElementById('editPrice').value = property.price;
-                        document.getElementById('editCurrencySymbol').value = property.currencySymbol;
-                        document.getElementById('editAddress').value = property.address || '';
-                        document.getElementById('editShowcase').checked = property.showcase;
-                        document.getElementById('editPropertyModal').classList.remove('hidden');
-                    }
-                } catch (error) {
-                    alert('Error fetching property details');
-                }
+                window.location.href = `/dashboard/properties/edit?id=${propertyId}`;
+            } else {
+                alert('Please select exactly one property to edit.');
             }
         });
     }
-
+    
     if (deleteButton) {
         deleteButton.addEventListener('click', async () => {
             if (selectedProperties.length > 0) {
@@ -101,35 +83,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                         alert('Error deleting properties');
                     }
                 }
-            }
-        });
-    }
-
-    if (editPropertyForm) {
-        editPropertyForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-
-            const formData = new FormData(editPropertyForm);
-            const propertyId = formData.get('id');
-            const showcase = document.getElementById('editShowcase').checked;
-
-            formData.set('showcase', showcase);
-
-            try {
-                const response = await fetch(`/api/property/update/${propertyId}`, {
-                    method: 'PUT',
-                    body: formData,
-                });
-
-                if (response.ok) {
-                    alert('Property updated successfully');
-                    location.reload();
-                } else {
-                    const data = await response.json();
-                    alert(data.message || 'Failed to update property');
-                }
-            } catch (error) {
-                alert('Error updating property');
             }
         });
     }
@@ -156,12 +109,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             } catch (error) {
                 alert('Error creating property');
             }
-        });
-    }
-
-    if (closeEditModal) {
-        closeEditModal.addEventListener('click', () => {
-            editPropertyModal.classList.add('hidden');
         });
     }
 });

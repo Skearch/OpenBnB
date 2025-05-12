@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Property" ADD COLUMN     "hours" INTEGER NOT NULL DEFAULT 24;
