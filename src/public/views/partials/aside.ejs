@@ -1,7 +1,7 @@
 <aside id="sidebar"
-    class="bg-gray-800 text-white w-64 h-screen fixed top-0 left-0 z-40 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out"
+    class="bg-white shadow text-black w-64 h-screen fixed top-0 left-0 z-40 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out"
     aria-label="Main navigation">
-    <div class="p-4 border-b border-gray-700 flex justify-between items-center">
+    <div class="p-4 flex justify-between items-center">
         <h1 class="text-xl sm:text-2xl font-bold truncate">
             <%= config.Business.Name %>
         </h1>
@@ -13,16 +13,19 @@
     </div>
     <nav class="flex-1 flex flex-col space-y-1 p-4" role="navigation">
         <a href="/"
-            class="block px-4 py-2 rounded hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500">Home</a>
+            class="block px-4 py-2 rounded hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500">Home</a>
         <a href="/dashboard/overview"
-            class="block px-4 py-2 rounded hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500">Overview</a>
+            class="block px-4 py-2 rounded hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500">Overview</a>
         <a href="/dashboard/properties"
-            class="block px-4 py-2 rounded hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500">Properties</a>
+            class="block px-4 py-2 rounded hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500">Properties</a>
         <a href="/dashboard/accounts"
-            class="block px-4 py-2 rounded hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500">Accounts</a>
+            class="block px-4 py-2 rounded hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500">Accounts</a>
     </nav>
-    <div class="p-4 border-t border-gray-700">
+    <div class="p-4">
         <button id="logout-button"
-            class="w-full bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors">Logout</button>
+            class="bg-red-500 text-white px-4 py-2 rounded-lg w-full hover:bg-red-600 transition flex items-center justify-center space-x-2">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Logout</span>
+        </button>
     </div>
 </aside>

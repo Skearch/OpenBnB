@@ -21,7 +21,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                             <input type="checkbox" class="property-checkbox" data-id="${property.id}" />
                         </td>
                         <td>${property.name}</td>
-                        <td>${property.description}</td>
                         <td>${property.currencySymbol} ${property.price}</td>
                         <td>${property.showcase ? 'Yes' : 'No'}</td>
                     </tr>
