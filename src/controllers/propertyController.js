@@ -29,7 +29,7 @@ const update = [
     ]),
     async (req, res) => {
         const { id } = req.params;
-        const { name, description, price, currencySymbol, address } = req.body;
+        const { name, description, price, currencySymbol, address, showcase } = req.body;
 
         const featuredImage = req.files?.['featuredImage']?.[0]?.buffer || null;
         const images = req.files?.['images']?.map(file => file.buffer) || [];
@@ -41,6 +41,7 @@ const update = [
                 price: parseFloat(price),
                 currencySymbol,
                 address,
+                showcase: showcase === 'true',
             };
 
             if (featuredImage) data.featuredImage = featuredImage;
@@ -58,6 +59,21 @@ const update = [
         }
     },
 ];
+
+const remove = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        await prisma.property.delete({
+            where: { id: parseInt(id) },
+        });
+
+        res.json({ message: 'Property deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting property:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
 
 const listAll = async (req, res) => {
     try {
@@ -138,4 +154,4 @@ const create = [
     },
 ];
 
-module.exports = { listAll, create, listShowcase, update };
+module.exports = { listAll, create, listShowcase, update, remove };

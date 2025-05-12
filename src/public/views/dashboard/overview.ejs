@@ -3,97 +3,68 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - <%= config.Business.Name %>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>Overview - <%= config.Business.Name %>
     </title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 </head>
 
 <body class="font-sans bg-gray-100">
-    <div class="flex h-screen">
-        <aside class="w-64 bg-gray-800 text-white flex flex-col fixed top-0 left-0 h-screen">
-            <div class="p-4 border-b border-gray-700">
-                <h1 class="text-2xl font-bold mb-4">
-                    <%= config.Business.Name %>
-                </h1>
-            </div>
-            <nav class="flex-1 flex flex-col space-y-2 p-4">
-                <a href="/" class="block px-4 py-2 rounded hover:bg-gray-700">
-                    Home
-                </a>
-                <a href="/dashboard/overview" class="block px-4 py-2 rounded hover:bg-gray-700">
-                    Overview
-                </a>
-                <a href="/dashboard/properties" class="block px-4 py-2 rounded hover:bg-gray-700">
-                    Properties
-                </a>
-                <a href="/dashboard/accounts" class="block px-4 py-2 rounded hover:bg-gray-700">
-                    Accounts
-                </a>
-                <a href="/dashboard/staff" class="block px-4 py-2 rounded hover:bg-gray-700">
-                    Staff
-                </a>
-                <a href="/dashboard/guest" class="block px-4 py-2 rounded hover:bg-gray-700">
-                    Guest
-                </a>
-            </nav>
-            <div class="p-4 border-t border-gray-700">
-                <button id="logout-button" class="w-full bg-red-500 text-white px-4 py-2 rounded-lg">
-                    Logout
-                </button>
-            </div>
-        </aside>
-
-        <div class="flex-1 flex flex-col ml-64">
-            <header class="bg-white shadow px-6 py-4 flex justify-between items-center sticky top-0 z-10">
-                <h2 class="text-xl font-semibold">Dashboard</h2>
-                <div class="flex items-center space-x-4">
-                    <span class="text-gray-600">Welcome, <%= user.name %></span>
-                </div>
-            </header>
-
-
-            <main class="flex-1 p-6 overflow-y-auto">
-                <h1 class="text-2xl font-bold text-center mb-6">Dashboard Overview</h1>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-
-                    <div class="bg-white shadow rounded-lg p-6">
-                        <h3 class="text-lg font-semibold mb-4">Total Properties</h3>
-                        <p class="text-4xl font-bold text-gray-800">25</p>
-                    </div>
-
-                    <div class="bg-white shadow rounded-lg p-6">
-                        <h3 class="text-lg font-semibold mb-4">Active Reservations</h3>
-                        <p class="text-4xl font-bold text-gray-800">12</p>
-                    </div>
-
-                    <div class="bg-white shadow rounded-lg p-6">
-                        <h3 class="text-lg font-semibold mb-4">Messages</h3>
-                        <p class="text-4xl font-bold text-gray-800">8</p>
-                    </div>
-                </div>
-
-                <div class="mt-8">
-                    <h2 class="text-xl font-semibold mb-4">Recent Activity</h2>
-                    <div class="bg-white shadow rounded-lg p-6">
-                        <ul class="divide-y divide-gray-200">
-                            <li class="py-4 flex justify-between">
-                                <span>New property added: "Luxury Villa"</span>
-                                <span class="text-gray-500 text-sm">2 hours ago</span>
-                            </li>
-                            <li class="py-4 flex justify-between">
-                                <span>Reservation confirmed for "Beach House"</span>
-                                <span class="text-gray-500 text-sm">5 hours ago</span>
-                            </li>
-                            <li class="py-4 flex justify-between">
-                                <span>Message received from John Doe</span>
-                                <span class="text-gray-500 text-sm">1 day ago</span>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </main>
+    <div class="flex min-h-screen relative">
+        <div id="sidebarOverlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden md:hidden" aria-hidden="true">
         </div>
+
+        <%- include('../partials/aside') %>
+            <div class="flex-1 flex flex-col transition-all duration-300 ease-in-out md:ml-64 w-full">
+                <%- include('../partials/header') %>
+
+                    <main class="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto">
+                        <h1 class="text-xl sm:text-2xl md:text-3xl font-bold text-center mb-6 sm:mb-8">Dashboard
+                            Overview</h1>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                            <div class="bg-white shadow-lg rounded-lg p-4 sm:p-6 hover:shadow-xl transition-shadow">
+                                <h3 class="text-base sm:text-lg md:text-xl font-semibold mb-2 sm:mb-3">Total Properties
+                                </h3>
+                                <p class="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800">25</p>
+                            </div>
+
+                            <div class="bg-white shadow-lg rounded-lg p-4 sm:p-6 hover:shadow-xl transition-shadow">
+                                <h3 class="text-base sm:text-lg md:text-xl font-semibold mb-2 sm:mb-3">Active
+                                    Reservations</h3>
+                                <p class="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800">12</p>
+                            </div>
+
+                            <div class="bg-white shadow-lg rounded-lg p-4 sm:p-6 hover:shadow-xl transition-shadow">
+                                <h3 class="text-base sm:text-lg md:text-xl font-semibold mb-2 sm:mb-3">Messages</h3>
+                                <p class="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800">8</p>
+                            </div>
+                        </div>
+
+                        <div class="mt-6 sm:mt-8 md:mt-10">
+                            <h2 class="text-lg sm:text-xl md:text-2xl font-semibold mb-4 sm:mb-6">Recent Activity</h2>
+                            <div class="bg-white shadow-lg rounded-lg p-4 sm:p-6">
+                                <ul class="divide-y divide-gray-200">
+                                    <li
+                                        class="py-2 sm:py-3 md:py-4 flex flex-col sm:flex-row justify-between text-xs sm:text-sm md:text-base">
+                                        <span class="truncate">New property added: "Luxury Villa"</span>
+                                        <span class="text-gray-500 text-xs sm:text-sm mt-1 sm:mt-0">2 hours ago</span>
+                                    </li>
+                                    <li
+                                        class="py-2 sm:py-3 md:py-4 flex flex-col sm:flex-row justify-between text-xs sm:text-sm md:text-base">
+                                        <span class="truncate">Reservation confirmed for "Beach House"</span>
+                                        <span class="text-gray-500 text-xs sm:text-sm mt-1 sm:mt-0">5 hours ago</span>
+                                    </li>
+                                    <li
+                                        class="py-2 sm:py-3 md:py-4 flex flex-col sm:flex-row justify-between text-xs sm:text-sm md:text-base">
+                                        <span class="truncate">Message received from John Doe</span>
+                                        <span class="text-gray-500 text-xs sm:text-sm mt-1 sm:mt-0">1 day ago</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </main>
+            </div>
     </div>
 
     <script src="../js/script.js"></script>

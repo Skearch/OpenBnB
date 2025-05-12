@@ -6,9 +6,11 @@ const pagesRouter = express.Router();
 const authenticationRoutes = require('./authenticationRoutes');
 const propertyRoutes = require('./propertyRoutes');
 const dashboardRoutes = require('./dashboardRoutes');
+const accountRoutes = require('./accountRoutes');
 
 apiRouter.use('/authentication', authenticationRoutes);
 apiRouter.use('/property', propertyRoutes);
+apiRouter.use('/account', accountRoutes);
 
 pagesRouter.get('/account/register', (req, res) => res.render('pages/register'));
 pagesRouter.get('/account/login', (req, res) => res.render('pages/login'));

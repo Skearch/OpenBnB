@@ -3,173 +3,175 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - <%= config.Business.Name %>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>Properties - <%= config.Business.Name %>
     </title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 </head>
 
 <body class="font-sans bg-gray-100">
-    <div class="flex h-screen">
-        <aside class="w-64 bg-gray-800 text-white flex flex-col fixed top-0 left-0 h-screen">
-            <div class="p-4 border-b border-gray-700">
-                <h1 class="text-2xl font-bold mb-4">
-                    <%= config.Business.Name %>
-                </h1>
-            </div>
-            <nav class="flex-1 flex flex-col space-y-2 p-4">
-                <a href="/" class="block px-4 py-2 rounded hover:bg-gray-700">
-                    Home
-                </a>
-                <a href="/dashboard/properties" class="block px-4 py-2 rounded hover:bg-gray-700">
-                    Properties
-                </a>
-                <a href="/dashboard/accounts" class="block px-4 py-2 rounded hover:bg-gray-700">
-                    Accounts
-                </a>
-                <a href="/dashboard/staff" class="block px-4 py-2 rounded hover:bg-gray-700">
-                    Staff
-                </a>
-                <a href="/dashboard/guest" class="block px-4 py-2 rounded hover:bg-gray-700">
-                    Guest
-                </a>
-            </nav>
-            <div class="p-4 border-t border-gray-700">
-                <button id="logout-button" class="w-full bg-red-500 text-white px-4 py-2 rounded-lg">
-                    Logout
-                </button>
-            </div>
-        </aside>
-
-        <div class="flex-1 flex flex-col ml-64">
-            <header class="bg-white shadow px-6 py-4 flex justify-between items-center sticky top-0 z-10">
-                <h2 class="text-xl font-semibold">Dashboard</h2>
-                <div class="flex items-center space-x-4">
-                    <span class="text-gray-600">Welcome, <%= user.name %></span>
-                </div>
-            </header>
-
-            <main class="flex-1 p-6 overflow-y-auto">
-                <h1 class="text-2xl font-bold text-center mb-6">Properties</h1>
-                <div class="space-y-8">
-
-                    <div class="bg-white shadow rounded-lg p-6">
-                        <table class="w-full border-collapse border border-gray-300">
-                            <thead class="bg-gray-100">
-                                <tr>
-                                    <th class="border border-gray-300 px-4 py-2 text-left">Name</th>
-                                    <th class="border border-gray-300 px-4 py-2 text-left">Description</th>
-                                    <th class="border border-gray-300 px-4 py-2 text-left">Price</th>
-                                    <th class="border border-gray-300 px-4 py-2 text-left">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="admin-property-list">
-
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div id="editPropertyModal"
-                        class="hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-50">
-                        <div class="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
-                            <h2 class="text-xl font-bold mb-4">Edit Property</h2>
-                            <form id="editPropertyForm" class="space-y-4" enctype="multipart/form-data">
-                                <input type="hidden" id="editPropertyId" name="id" />
-                                <div>
-                                    <label for="editName" class="block text-sm font-medium">Name</label>
-                                    <input type="text" id="editName" name="name" class="w-full border rounded-lg p-2"
-                                        required />
-                                </div>
-                                <div>
-                                    <label for="editDescription" class="block text-sm font-medium">Description</label>
-                                    <input type="text" id="editDescription" name="description"
-                                        class="w-full border rounded-lg p-2" required />
-                                </div>
-                                <div>
-                                    <label for="editPrice" class="block text-sm font-medium">Price</label>
-                                    <input type="number" id="editPrice" name="price"
-                                        class="w-full border rounded-lg p-2" required />
-                                </div>
-                                <div>
-                                    <label for="editCurrencySymbol" class="block text-sm font-medium">Currency
-                                        Symbol</label>
-                                    <input type="text" id="editCurrencySymbol" name="currencySymbol"
-                                        class="w-full border rounded-lg p-2" minlength="1" maxlength="3" required />
-                                </div>
-                                <div>
-                                    <label for="editAddress" class="block text-sm font-medium">Address</label>
-                                    <input type="text" id="editAddress" name="address"
-                                        class="w-full border rounded-lg p-2" required />
-                                </div>
-                                <div>
-                                    <label for="editFeaturedImage" class="block text-sm font-medium">Featured
-                                        Image</label>
-                                    <input type="file" id="editFeaturedImage" name="featuredImage"
-                                        class="w-full border rounded-lg p-2" required />
-                                </div>
-                                <div>
-                                    <label for="editImages" class="block text-sm font-medium">Additional Images</label>
-                                    <input type="file" id="editImages" name="images"
-                                        class="w-full border rounded-lg p-2" multiple required />
-                                </div>
-                                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-lg w-full">
-                                    Save Changes
-                                </button>
-                            </form>
-                            <button id="closeEditModal"
-                                class="mt-4 w-full py-2 bg-gray-300 rounded-lg text-center">Cancel</button>
-                        </div>
-                    </div>
-
-                    <div class="bg-white shadow rounded-lg p-6">
-                        <h2 class="text-xl font-semibold mb-4">Add Property</h2>
-                        <form id="addPropertyForm" class="space-y-4" enctype="multipart/form-data">
-                            <div>
-                                <label for="addName" class="block text-sm font-medium">Name</label>
-                                <input type="text" id="addName" name="name" class="w-full border rounded-lg p-2"
-                                    required />
-                            </div>
-                            <div>
-                                <label for="addDescription" class="block text-sm font-medium">Description</label>
-                                <input type="text" id="addDescription" name="description"
-                                    class="w-full border rounded-lg p-2" required />
-                            </div>
-                            <div>
-                                <label for="addPrice" class="block text-sm font-medium">Price</label>
-                                <input type="number" id="addPrice" name="price" class="w-full border rounded-lg p-2"
-                                    required />
-                            </div>
-                            <div>
-                                <label for="addCurrencySymbol" class="block text-sm font-medium">Currency Symbol</label>
-                                <input type="text" id="addCurrencySymbol" name="currencySymbol"
-                                    class="w-full border rounded-lg p-2" minlength="1" maxlength="3" required />
-                            </div>
-                            <div>
-                                <label for="addAddress" class="block text-sm font-medium">Address</label>
-                                <input type="text" id="addAddress" name="address" class="w-full border rounded-lg p-2"
-                                    required />
-                            </div>
-                            <div>
-                                <label for="addFeaturedImage" class="block text-sm font-medium">Featured Image</label>
-                                <input type="file" id="addFeaturedImage" name="featuredImage"
-                                    class="w-full border rounded-lg p-2" required />
-                            </div>
-                            <div>
-                                <label for="addImages" class="block text-sm font-medium">Additional Images</label>
-                                <input type="file" id="addImages" name="images" class="w-full border rounded-lg p-2"
-                                    multiple required />
-                            </div>
-                            <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded-lg w-full">
-                                Add Property
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </main>
+    <div class="flex min-h-screen relative">
+        <div id="sidebarOverlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden md:hidden" aria-hidden="true">
         </div>
+
+        <%- include('../partials/aside') %>
+            <div class="flex-1 flex flex-col transition-all duration-300 ease-in-out md:ml-64 w-full">
+                <%- include('../partials/header') %>
+
+                    <main class="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto">
+                        <h1 class="text-xl sm:text-2xl md:text-3xl font-bold text-center mb-6 sm:mb-8">Manage Properties
+                        </h1>
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                            <div
+                                class="bg-white shadow-lg rounded-lg p-4 sm:p-6 hover:shadow-xl transition-shadow lg:col-span-1">
+                                <h3 class="text-lg sm:text-xl font-semibold mb-4">Add Property</h3>
+                                <form id="addPropertyForm" class="space-y-4" enctype="multipart/form-data">
+                                    <div>
+                                        <label for="addName" class="block text-sm font-medium">Name</label>
+                                        <input type="text" id="addName" name="name" class="w-full border rounded-lg p-2"
+                                            required />
+                                    </div>
+                                    <div>
+                                        <label for="addDescription"
+                                            class="block text-sm font-medium">Description</label>
+                                        <input type="text" id="addDescription" name="description"
+                                            class="w-full border rounded-lg p-2" required />
+                                    </div>
+                                    <div>
+                                        <label for="addPrice" class="block text-sm font-medium">Price</label>
+                                        <input type="number" id="addPrice" name="price"
+                                            class="w-full border rounded-lg p-2" required />
+                                    </div>
+                                    <div>
+                                        <label for="addCurrencySymbol" class="block text-sm font-medium">Currency
+                                            Symbol</label>
+                                        <input type="text" id="addCurrencySymbol" name="currencySymbol"
+                                            class="w-full border rounded-lg p-2" minlength="1" maxlength="3" required />
+                                    </div>
+                                    <div>
+                                        <label for="addAddress" class="block text-sm font-medium">Address</label>
+                                        <input type="text" id="addAddress" name="address"
+                                            class="w-full border rounded-lg p-2" required />
+                                    </div>
+                                    <div>
+                                        <label for="addFeaturedImage" class="block text-sm font-medium">Featured
+                                            Image</label>
+                                        <input type="file" id="addFeaturedImage" name="featuredImage"
+                                            class="w-full border rounded-lg p-2" required />
+                                    </div>
+                                    <div>
+                                        <label for="addImages" class="block text-sm font-medium">Additional
+                                            Images</label>
+                                        <input type="file" id="addImages" name="images"
+                                            class="w-full border rounded-lg p-2" multiple required />
+                                    </div>
+                                    <button type="submit"
+                                        class="bg-green-500 text-white px-4 py-2 rounded-lg w-full hover:bg-green-600 transition">
+                                        Add Property
+                                    </button>
+                                </form>
+                            </div>
+
+                            <div
+                                class="bg-white shadow-lg rounded-lg p-4 sm:p-6 hover:shadow-xl transition-shadow lg:col-span-2">
+                                <h3 class="text-lg sm:text-xl font-semibold mb-4">Properties List</h3>
+                                <table class="w-full border-collapse border border-gray-300 text-sm sm:text-base">
+                                    <thead class="bg-gray-100">
+                                        <tr>
+                                            <th class="border border-gray-300 px-2 py-1 text-left">Selected</th>
+                                            <th class="border border-gray-300 px-2 py-2 text-left">Name</th>
+                                            <th class="border border-gray-300 px-2 py-5 text-left">Description</th>
+                                            <th class="border border-gray-300 px-2 py-3 text-left">Price</th>
+                                            <th class="border border-gray-300 px-2 py-3 text-left">Showcase</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="admin-property-list">
+
+                                    </tbody>
+                                </table>
+
+                                <div class="mt-6 flex justify-center space-x-6">
+                                    <button id="edit-button"
+                                        class="bg-blue-500 text-white px-4 py-2 rounded-lg w-full hover:bg-blue-600 transition disabled:bg-gray-400 disabled:cursor-not-allowed"
+                                        disabled>
+                                        <i class="fas fa-edit mr-2"></i>Edit
+                                    </button>
+                                    <button id="delete-button"
+                                        class="bg-red-500 text-white px-4 py-2 rounded-lg w-full hover:bg-red-600 transition disabled:bg-gray-400 disabled:cursor-not-allowed"
+                                        disabled>
+                                        <i class="fas fa-trash-alt mr-2"></i>Delete
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="editPropertyModal"
+                            class="hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-50">
+                            <div class="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
+                                <h2 class="text-xl font-bold mb-4">Edit Property</h2>
+                                <form id="editPropertyForm" class="space-y-4" enctype="multipart/form-data">
+                                    <input type="hidden" id="editPropertyId" name="id" />
+                                    <div>
+                                        <label for="editName" class="block text-sm font-medium">Name</label>
+                                        <input type="text" id="editName" name="name"
+                                            class="w-full border rounded-lg p-2" required />
+                                    </div>
+                                    <div>
+                                        <label for="editDescription"
+                                            class="block text-sm font-medium">Description</label>
+                                        <input type="text" id="editDescription" name="description"
+                                            class="w-full border rounded-lg p-2" required />
+                                    </div>
+                                    <div>
+                                        <label for="editPrice" class="block text-sm font-medium">Price</label>
+                                        <input type="number" id="editPrice" name="price"
+                                            class="w-full border rounded-lg p-2" required />
+                                    </div>
+                                    <div>
+                                        <label for="editCurrencySymbol" class="block text-sm font-medium">Currency
+                                            Symbol</label>
+                                        <input type="text" id="editCurrencySymbol" name="currencySymbol"
+                                            class="w-full border rounded-lg p-2" minlength="1" maxlength="3" required />
+                                    </div>
+                                    <div>
+                                        <label for="editAddress" class="block text-sm font-medium">Address</label>
+                                        <input type="text" id="editAddress" name="address"
+                                            class="w-full border rounded-lg p-2" required />
+                                    </div>
+                                    <div>
+                                        <label for="editShowcase" class="block text-sm font-medium">Showcase</label>
+                                        <input type="checkbox" id="editShowcase" name="showcase" class="w-6 h-6" />
+                                    </div>
+                                    <div>
+                                        <label for="editFeaturedImage" class="block text-sm font-medium">Featured
+                                            Image</label>
+                                        <input type="file" id="editFeaturedImage" name="featuredImage"
+                                            class="w-full border rounded-lg p-2" />
+                                    </div>
+                                    <div>
+                                        <label for="editImages" class="block text-sm font-medium">Additional
+                                            Images</label>
+                                        <input type="file" id="editImages" name="images"
+                                            class="w-full border rounded-lg p-2" multiple />
+                                    </div>
+                                    <button type="submit"
+                                        class="bg-blue-500 text-white px-4 py-2 rounded-lg w-full hover:bg-blue-600 transition">
+                                        Save Changes
+                                    </button>
+                                </form>
+                                <button id="closeEditModal"
+                                    class="mt-4 w-full py-2 bg-gray-300 rounded-lg text-center hover:bg-gray-400 transition">
+                                    Cancel
+                                </button>
+                            </div>
+                        </div>
+                    </main>
+            </div>
     </div>
 
     <script src="../js/properties.js"></script>
+    <script src="../js/script.js"></script>
 </body>
 
 </html>
