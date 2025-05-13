@@ -1,136 +1,223 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, shrink-to-fit=no"
+    />
     <title>Accounts - <%= config.Business.Name %></title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
-</head>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+      rel="stylesheet"
+    />
+  </head>
 
-<body class="font-sans bg-gray-100">
+  <body class="font-sans bg-gray-100">
     <div class="flex min-h-screen relative">
-        <div id="sidebarOverlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden md:hidden" aria-hidden="true">
-        </div>
+      <div
+        id="sidebarOverlay"
+        class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden md:hidden"
+        aria-hidden="true"
+      ></div>
 
-        <%- include('../partials/aside') %>
-            <div class="flex-1 flex flex-col transition-all duration-300 ease-in-out md:ml-64 w-full">
-                <%- include('../partials/header') %>
+      <%- include('../partials/aside') %>
+      <div
+        class="flex-1 flex flex-col transition-all duration-300 ease-in-out md:ml-64 w-full"
+      >
+        <%- include('../partials/header') %>
 
-                    <main class="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto">
-                        <h1 class="text-xl sm:text-2xl md:text-3xl font-bold text-center mb-6 sm:mb-8">Manage Accounts
-                        </h1>
-                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-                            <div
-                                class="bg-white shadow rounded-lg p-4 sm:p-6 hover:shadow-xl transition-shadow lg:col-span-1">
-                                <h3 class="text-lg sm:text-xl font-semibold mb-4">Add Account</h3>
-                                <form id="addAccountForm" class="space-y-4">
-                                    <div>
-                                        <label for="addName" class="block text-sm font-medium">Full Name</label>
-                                        <input type="text" id="addName" name="name" class="w-full border rounded-lg p-2"
-                                            required />
-                                    </div>
-                                    <div>
-                                        <label for="addEmail" class="block text-sm font-medium">Email</label>
-                                        <input type="email" id="addEmail" name="email"
-                                            class="w-full border rounded-lg p-2" required />
-                                    </div>
-                                    <div>
-                                        <label for="addPassword" class="block text-sm font-medium">Password</label>
-                                        <input type="password" id="addPassword" name="password"
-                                            class="w-full border rounded-lg p-2" required />
-                                    </div>
-                                    <div>
-                                        <label for="addRole" class="block text-sm font-medium">Role</label>
-                                        <select id="addRole" name="role" class="w-full border rounded-lg p-2" required>
-                                            <option value="guest">Guest</option>
-                                            <option value="staff">Staff</option>
-                                            <option value="owner">Owner</option>
-                                        </select>
-                                    </div>
-                                    <button type="submit"
-                                        class="bg-green-500 text-white px-4 py-2 rounded-lg w-full hover:bg-green-600 transition flex items-center justify-center space-x-2">
-                                        <i class="fas fa-plus"></i>
-                                        <span>Add Account</span>
-                                    </button>
-                                </form>
-                            </div>
-
-                            <div
-                                class="bg-white shadow rounded-lg p-4 sm:p-6 hover:shadow-xl transition-shadow lg:col-span-2">
-                                <h3 class="text-lg sm:text-xl font-semibold mb-4">Accounts List</h3>
-                                <table class="w-full border-collapse border border-gray-300 text-sm sm:text-base">
-                                    <thead class="bg-gray-100">
-                                        <tr>
-                                            <th class="border border-gray-300 px-2 py-1 text-left">Selected</th>
-                                            <th class="border border-gray-300 px-2 py-2 text-left">Name</th>
-                                            <th class="border border-gray-300 px-2 py-2 text-left">Email</th>
-                                            <th class="border border-gray-300 px-2 py-2 text-left">Role</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="admin-account-list">
-
-                                    </tbody>
-                                </table>
-
-                                <div class="mt-6 flex justify-center space-x-6">
-                                    <button id="edit-button"
-                                        class="bg-blue-500 text-white px-4 py-2 rounded-lg w-full hover:bg-blue-600 transition disabled:bg-gray-400 disabled:cursor-not-allowed"
-                                        disabled>
-                                        <i class="fas fa-edit mr-2"></i>Edit
-                                    </button>
-                                    <button id="delete-button"
-                                        class="bg-red-500 text-white px-4 py-2 rounded-lg w-full hover:bg-red-600 transition disabled:bg-gray-400 disabled:cursor-not-allowed"
-                                        disabled>
-                                        <i class="fas fa-trash-alt mr-2"></i>Delete
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div id="editAccountModal"
-                            class="hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-50">
-                            <div class="bg-white p-6 rounded-lg shadow max-w-md w-full">
-                                <h2 class="text-xl font-bold mb-4">Edit Account</h2>
-                                <form id="editAccountForm" class="space-y-4">
-                                    <input type="hidden" id="editAccountId" name="id" />
-                                    <div>
-                                        <label for="editName" class="block text-sm font-medium">Full Name</label>
-                                        <input type="text" id="editName" name="name"
-                                            class="w-full border rounded-lg p-2" required />
-                                    </div>
-                                    <div>
-                                        <label for="editEmail" class="block text-sm font-medium">Email</label>
-                                        <input type="email" id="editEmail" name="email"
-                                            class="w-full border rounded-lg p-2" required />
-                                    </div>
-                                    <div>
-                                        <label for="editRole" class="block text-sm font-medium">Role</label>
-                                        <select id="editRole" name="role" class="w-full border rounded-lg p-2" required>
-                                            <option value="guest">Guest</option>
-                                            <option value="staff">Staff</option>
-                                            <option value="owner">Owner</option>
-                                        </select>
-                                    </div>
-                                    <button type="submit"
-                                        class="bg-blue-500 text-white px-4 py-2 rounded-lg w-full hover:bg-blue-600 transition">
-                                        Save Changes
-                                    </button>
-                                </form>
-                                <button id="closeEditModal"
-                                    class="mt-4 w-full py-2 bg-gray-300 rounded-lg text-center hover:bg-gray-400 transition">
-                                    Cancel
-                                </button>
-                            </div>
-                        </div>
-                    </main>
+        <main class="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto">
+          <h1
+            class="text-xl sm:text-2xl md:text-3xl font-bold text-center mb-6 sm:mb-8"
+          >
+            Manage Accounts
+          </h1>
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div
+              class="bg-white shadow rounded-lg p-4 sm:p-6 hover:shadow-xl transition-shadow lg:col-span-1"
+            >
+              <h3 class="text-lg sm:text-xl font-semibold mb-4">Add Account</h3>
+              <form id="addAccountForm" class="space-y-4">
+                <div>
+                  <label for="addName" class="block text-sm font-medium"
+                    >Full Name</label
+                  >
+                  <input
+                    type="text"
+                    id="addName"
+                    name="name"
+                    class="w-full border rounded-lg p-2"
+                    required
+                  />
+                </div>
+                <div>
+                  <label for="addEmail" class="block text-sm font-medium"
+                    >Email</label
+                  >
+                  <input
+                    type="email"
+                    id="addEmail"
+                    name="email"
+                    class="w-full border rounded-lg p-2"
+                    required
+                  />
+                </div>
+                <div>
+                  <label for="addPassword" class="block text-sm font-medium"
+                    >Password</label
+                  >
+                  <input
+                    type="password"
+                    id="addPassword"
+                    name="password"
+                    class="w-full border rounded-lg p-2"
+                    required
+                  />
+                </div>
+                <div>
+                  <label for="addRole" class="block text-sm font-medium"
+                    >Role</label
+                  >
+                  <select
+                    id="addRole"
+                    name="role"
+                    class="w-full border rounded-lg p-2"
+                    required
+                  >
+                    <option value="guest">Guest</option>
+                    <option value="staff">Staff</option>
+                    <option value="owner">Owner</option>
+                  </select>
+                </div>
+                <button
+                  type="submit"
+                  class="bg-green-500 text-white px-4 py-2 rounded-lg w-full hover:bg-green-600 transition flex items-center justify-center space-x-2"
+                >
+                  <i class="fas fa-plus"></i>
+                  <span>Add Account</span>
+                </button>
+              </form>
             </div>
+
+            <div
+              class="bg-white shadow rounded-lg p-4 sm:p-6 hover:shadow-xl transition-shadow lg:col-span-2"
+            >
+              <h3 class="text-lg sm:text-xl font-semibold mb-4">
+                Accounts List
+              </h3>
+              <table
+                class="w-full border-collapse border border-gray-300 text-sm sm:text-base"
+              >
+                <thead class="bg-gray-100">
+                  <tr>
+                    <th class="border border-gray-300 px-2 py-1 text-left">
+                      Selected
+                    </th>
+                    <th class="border border-gray-300 px-2 py-2 text-left">
+                      Name
+                    </th>
+                    <th class="border border-gray-300 px-2 py-2 text-left">
+                      Email
+                    </th>
+                    <th class="border border-gray-300 px-2 py-2 text-left">
+                      Role
+                    </th>
+                  </tr>
+                </thead>
+                <tbody id="admin-account-list"></tbody>
+              </table>
+
+              <div class="mt-6 flex justify-center space-x-6">
+                <button
+                  id="edit-button"
+                  class="bg-blue-500 text-white px-4 py-2 rounded-lg w-full hover:bg-blue-600 transition disabled:bg-gray-400 disabled:cursor-not-allowed"
+                  disabled
+                >
+                  <i class="fas fa-edit mr-2"></i>Edit
+                </button>
+                <button
+                  id="delete-button"
+                  class="bg-red-500 text-white px-4 py-2 rounded-lg w-full hover:bg-red-600 transition disabled:bg-gray-400 disabled:cursor-not-allowed"
+                  disabled
+                >
+                  <i class="fas fa-trash-alt mr-2"></i>Delete
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div
+            id="editAccountModal"
+            class="hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-50"
+          >
+            <div class="bg-white p-6 rounded-lg shadow max-w-md w-full">
+              <h2 class="text-xl font-bold mb-4">Edit Account</h2>
+              <form id="editAccountForm" class="space-y-4">
+                <input type="hidden" id="editAccountId" name="id" />
+                <div>
+                  <label for="editName" class="block text-sm font-medium"
+                    >Full Name</label
+                  >
+                  <input
+                    type="text"
+                    id="editName"
+                    name="name"
+                    class="w-full border rounded-lg p-2"
+                    required
+                  />
+                </div>
+                <div>
+                  <label for="editEmail" class="block text-sm font-medium"
+                    >Email</label
+                  >
+                  <input
+                    type="email"
+                    id="editEmail"
+                    name="email"
+                    class="w-full border rounded-lg p-2"
+                    required
+                  />
+                </div>
+                <div>
+                  <label for="editRole" class="block text-sm font-medium"
+                    >Role</label
+                  >
+                  <select
+                    id="editRole"
+                    name="role"
+                    class="w-full border rounded-lg p-2"
+                    required
+                  >
+                    <option value="guest">Guest</option>
+                    <option value="staff">Staff</option>
+                    <option value="owner">Owner</option>
+                  </select>
+                </div>
+                <button
+                  type="submit"
+                  class="bg-blue-500 text-white px-4 py-2 rounded-lg w-full hover:bg-blue-600 transition"
+                >
+                  Save Changes
+                </button>
+              </form>
+              <button
+                id="closeEditModal"
+                class="mt-4 w-full py-2 bg-gray-300 rounded-lg text-center hover:bg-gray-400 transition"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </main>
+      </div>
     </div>
 
     <script src="../js/accounts.js"></script>
     <script src="../js/script.js"></script>
-</body>
-
+  </body>
 </html>
