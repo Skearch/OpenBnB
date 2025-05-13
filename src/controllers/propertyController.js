@@ -1,120 +1,28 @@
 const { prisma } = require('../config/database');
-const Joi = require('joi');
-const validateInput = require('../middleware/validateInput');
-const multer = require('multer');
-
-const propertySchema = Joi.object({
-    name: Joi.string().required(),
-    description: Joi.string().required(),
-    price: Joi.number().required(),
-    currencySymbol: Joi.string().min(1).max(3).required(),
-    address: Joi.string().required(),
-    hours: Joi.number().integer().min(1).required(),
-});
-
-const upload = multer({
-    fileFilter: (req, file, cb) => {
-        const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif'];
-        if (!allowedMimeTypes.includes(file.mimetype)) {
-            return cb(new Error('Only image files are allowed'), false);
-        }
-        cb(null, true);
-    },
-    limits: { fileSize: 5 * 1024 * 1024 },
-});
-
-const update = [
-    upload.fields([
-        { name: 'featuredImage', maxCount: 1 },
-        { name: 'images', maxCount: 4 },
-    ]),
-    async (req, res) => {
-        const { id } = req.params;
-        const { name, description, price, currencySymbol, address, showcase } = req.body;
-
-        const featuredImage = req.files?.['featuredImage']?.[0]?.buffer || null;
-        const images = req.files?.['images']?.map(file => file.buffer) || [];
-
-        try {
-            const data = {
-                name,
-                description,
-                price: parseFloat(price),
-                currencySymbol,
-                address,
-                showcase: showcase === 'true',
-            };
-
-            if (featuredImage) data.featuredImage = featuredImage;
-            if (images.length > 0) data.images = images;
-
-            const property = await prisma.property.update({
-                where: { id: parseInt(id) },
-                data,
-            });
-
-            res.json({ message: 'Property updated successfully', property });
-        } catch (error) {
-            console.error('Error updating property:', error);
-            res.status(500).json({ message: 'Server error' });
-        }
-    },
-];
-
-const getProperty = async (req, res) => {
-    const { id } = req.params;
-
-    try {
-        const property = await prisma.property.findUnique({
-            where: { id: parseInt(id) },
-        });
-
-        if (!property) {
-            return res.status(404).json({ message: 'Property not found' });
-        }
-
-        property.featuredImage = property.featuredImage
-            ? Buffer.from(property.featuredImage).toString('base64')
-            : null;
-        property.images = property.images
-            ? property.images.map((image) => Buffer.from(image).toString('base64'))
-            : [];
-
-        res.json(property);
-    } catch (error) {
-        console.error('Error fetching property:', error);
-        res.status(500).json({ message: 'Server error' });
-    }
-};
-
-const remove = async (req, res) => {
-    const { id } = req.params;
-
-    try {
-        await prisma.property.delete({
-            where: { id: parseInt(id) },
-        });
-
-        res.json({ message: 'Property deleted successfully' });
-    } catch (error) {
-        console.error('Error deleting property:', error);
-        res.status(500).json({ message: 'Server error' });
-    }
-};
 
 const listAll = async (req, res) => {
     try {
-        const properties = await prisma.property.findMany();
+        const properties = await prisma.property.findMany({
+            select: {
+                id: true,
+                name: true,
+                price: true,
+                showcase: true,
+                featuredImage: true,
+            },
+        });
+
         const propertiesWithImages = properties.map(property => ({
             ...property,
             featuredImage: property.featuredImage
                 ? Buffer.from(property.featuredImage).toString('base64')
                 : null,
         }));
-        res.json(propertiesWithImages);
+
+        res.json({ success: true, properties: propertiesWithImages });
     } catch (error) {
         console.error('Error fetching properties:', error);
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ success: false, message: 'Server error' });
     }
 };
 
@@ -134,52 +42,97 @@ const listShowcase = async (req, res) => {
     }
 };
 
-const create = [
-    upload.fields([
-        { name: 'featuredImage', maxCount: 1 },
-        { name: 'images', maxCount: 4 },
-    ]),
-    validateInput(propertySchema),
-    async (req, res) => {
-        if (!req.user) {
-            return res.status(401).json({ message: 'Unauthorized' });
+const createProperty = async (req, res) => {
+    try {
+        const { name, price, description, showcase, hours, currencySymbol, address } = req.body;
+        const featuredImage = req.files?.featuredImage?.[0]?.buffer;
+        const images = req.files?.images?.map(file => file.buffer) || [];
+
+        if (images.length < 1) {
+            return res.status(400).json({ message: 'You must upload at least 1 additional image.' });
         }
-
-        const { name, description, price, currencySymbol, address, hours } = req.body;
-
-        const featuredImage = req.files?.['featuredImage']?.[0]?.buffer || null;
-        const images = req.files?.['images']?.map(file => file.buffer) || [];
 
         if (!featuredImage) {
-            return res.status(400).json({ message: 'Featured image is required.' });
+            return res.status(400).json({ message: 'You must select one image as the featured image.' });
         }
 
-        if (images.length < 1 || images.length > 4) {
-            return res.status(400).json({ message: 'You must upload between 1 and 4 additional images.' });
+        const property = await prisma.property.create({
+            data: {
+                name,
+                price: parseFloat(price),
+                description,
+                hours: hours ? parseInt(hours) : 24,
+                currencySymbol: currencySymbol || '$',
+                address: address || '',
+                showcase: showcase === 'true',
+                featuredImage,
+                images,
+                ownerId: req.user.id,
+            },
+        });
+
+        res.status(201).json({ success: true, property });
+    } catch (error) {
+        console.error('Error creating property:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
+const editProperty = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { name, price, description, showcase, hours, currencySymbol, address } = req.body;
+        const featuredImage = req.files?.featuredImage?.[0]?.buffer;
+        const images = req.files?.images?.map(file => file.buffer) || [];
+
+        if (images.length < 1) {
+            return res.status(400).json({ message: 'You must upload at least 1 additional image.' });
         }
 
-        try {
-            const property = await prisma.property.create({
-                data: {
-                    ownerId: req.user.id,
-                    name,
-                    description,
-                    price: parseFloat(price),
-                    currencySymbol,
-                    address,
-                    hours: parseInt(hours),
-                    featuredImage,
-                    images,
-                    availability: { dates: [] },
-                },
-            });
-
-            return res.status(201).json({ message: 'Property created successfully', property });
-        } catch (error) {
-            console.error('Error creating property:', error);
-            return res.status(500).json({ message: 'Server error' });
+        if (!featuredImage) {
+            return res.status(400).json({ message: 'You must select one image as the featured image.' });
         }
-    },
-];
+        
+        if (!name || !price) {
+            return res.status(400).json({ message: 'Name and price are required.' });
+        }
 
-module.exports = { listAll, create, listShowcase, update, remove, getProperty };
+        const property = await prisma.property.update({
+            where: { id: parseInt(id) },
+            data: {
+                name,
+                price: parseFloat(price),
+                description,
+                hours: hours ? parseInt(hours) : 24,
+                currencySymbol: currencySymbol || '$',
+                address: address || '',
+                showcase: showcase === 'true',
+                featuredImage,
+                images,
+                ownerId: req.user.id,
+            },
+        });
+
+        res.status(200).json({ success: true, property });
+    } catch (error) {
+        console.error('Error editing property:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
+const deleteProperty = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        await prisma.property.delete({
+            where: { id: parseInt(id) },
+        });
+
+        res.status(200).json({ success: true, message: 'Property deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting property:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
+module.exports = { listAll, listShowcase, createProperty, editProperty, deleteProperty };

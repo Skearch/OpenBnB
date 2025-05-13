@@ -4,23 +4,23 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     try {
         const response = await fetch('/api/property/listall');
-        const properties = await response.json();
+        const data = await response.json();
 
-        if (properties.length === 0) {
+        if (!data.success || data.properties.length === 0) {
             listingsTitle.textContent = 'No Listings Available';
             return;
         }
 
         listingsTitle.textContent = 'Browse All Listings';
 
-        properties.forEach(property => {
+        data.properties.forEach(property => {
             const propertyCard = `
                 <div class="bg-white shadow-lg rounded-lg overflow-hidden h-100 w-80">
                     <img src="${property.featuredImage ? `data:image/jpeg;base64,${property.featuredImage}` : 'https://placehold.co/300x200'}"
                         alt="${property.name}" class="w-full h-48 object-cover" />
                     <div class="p-4">
                         <h4 class="text-lg font-semibold">${property.name}</h4>
-                        <p class="text-gray-600">${property.currencySymbol} ${property.price} per night</p>
+                        <p class="text-gray-600">${property.currencySymbol || '$'} ${property.price} per night</p>
                     </div>
                 </div>
             `;

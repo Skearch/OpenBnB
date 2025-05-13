@@ -23,35 +23,27 @@ const redirect = [
     }
 ];
 
-const formProperty = async (req, res) => {
-    const { id } = req.query;
-    let property = null;
+const overview = [(req, res) => res.render('dashboard/overview')];
+const accounts = [(req, res) => res.render('dashboard/accounts')];
 
-    if (id) {
-        property = await prisma.property.findUnique({
-            where: { id: parseInt(id) },
+const properties = (req, res) => res.render('dashboard/properties');
+const propertiesCreate = (req, res) => res.render('dashboard/propertiesCreate');
+
+const propertiesEdit = async (req, res) => {
+    try {
+        const property = await prisma.property.findUnique({
+            where: { id: parseInt(req.params.id) },
         });
 
         if (!property) {
             return res.status(404).send('Property not found');
         }
 
-        property.featuredImage = property.featuredImage
-            ? Buffer.from(property.featuredImage).toString('base64')
-            : null;
-        property.images = property.images
-            ? property.images.map((image) => Buffer.from(image).toString('base64'))
-            : [];
+        res.render('dashboard/propertiesEdit', { property });
+    } catch (error) {
+        console.error('Error fetching property:', error);
+        res.status(500).send('Server error');
     }
-
-    res.render('dashboard/formProperties', {
-        isEdit: !!id,
-        property,
-    });
 };
 
-const properties = [(req, res) => res.render('dashboard/properties')];
-const overview = [(req, res) => res.render('dashboard/overview')];
-const accounts = [(req, res) => res.render('dashboard/accounts')];
-
-module.exports = { redirect, properties, accounts, overview, formProperty };
+module.exports = { redirect, accounts, overview, properties, propertiesCreate, propertiesEdit };
