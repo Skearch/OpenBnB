@@ -23,8 +23,7 @@ const listAll = async (req, res) => {
       },
     });
     res.json(accounts);
-  } catch (error) {
-    console.error("Error fetching accounts:", error);
+  } catch {
     res.status(500).json({ message: "Server error" });
   }
 };
@@ -33,29 +32,18 @@ const create = [
   validateInput(accountSchema),
   async (req, res) => {
     const { name, email, password, role } = req.body;
-
     try {
       const existingUser = await prisma.user.findUnique({ where: { email } });
-      if (existingUser) {
+      if (existingUser)
         return res.status(400).json({ message: "Email is already in use" });
-      }
-
       const hashedPassword = await bcrypt.hash(password, 10);
-
       const account = await prisma.user.create({
-        data: {
-          name,
-          email,
-          password: hashedPassword,
-          role,
-        },
+        data: { name, email, password: hashedPassword, role },
       });
-
       res
         .status(201)
         .json({ message: "Account created successfully", account });
-    } catch (error) {
-      console.error("Error creating account:", error);
+    } catch {
       res.status(500).json({ message: "Server error" });
     }
   },
@@ -66,23 +54,18 @@ const update = [
   async (req, res) => {
     const { id } = req.params;
     const { name, email, password, role } = req.body;
-
     try {
       const data = { name, email, role };
-
       if (password) {
         const hashedPassword = await bcrypt.hash(password, 10);
         data.password = hashedPassword;
       }
-
       const account = await prisma.user.update({
         where: { id: parseInt(id) },
         data,
       });
-
       res.json({ message: "Account updated successfully", account });
-    } catch (error) {
-      console.error("Error updating account:", error);
+    } catch {
       res.status(500).json({ message: "Server error" });
     }
   },
@@ -90,15 +73,10 @@ const update = [
 
 const remove = async (req, res) => {
   const { id } = req.params;
-
   try {
-    await prisma.user.delete({
-      where: { id: parseInt(id) },
-    });
-
+    await prisma.user.delete({ where: { id: parseInt(id) } });
     res.json({ message: "Account deleted successfully" });
-  } catch (error) {
-    console.error("Error deleting account:", error);
+  } catch {
     res.status(500).json({ message: "Server error" });
   }
 };

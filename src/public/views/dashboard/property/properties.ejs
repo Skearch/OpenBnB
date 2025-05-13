@@ -24,18 +24,20 @@
         class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden md:hidden"
         aria-hidden="true"
       ></div>
-      <%- include('../partials/aside') %>
+      <%- include('../../partials/aside') %>
       <div
         class="flex-1 flex flex-col transition-all duration-300 ease-in-out md:ml-64 w-full"
       >
-        <%- include('../partials/header') %>
+        <%- include('../../partials/header') %>
         <main class="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto">
           <h1
             class="text-xl sm:text-2xl md:text-3xl font-bold text-center mb-6 sm:mb-8"
           >
             Manage Properties
           </h1>
-          <div class="bg-white shadow rounded-lg p-4 sm:p-6">
+          <div
+            class="bg-white shadow rounded-lg p-4 sm:p-6 hover:shadow-xl transition-shadow"
+          >
             <table
               class="w-full border-collapse border border-gray-300 text-sm sm:text-base"
             >
@@ -54,33 +56,38 @@
               </thead>
               <tbody id="property-list"></tbody>
             </table>
-          </div>
-          <div class="mt-6 flex justify-center space-x-6">
-            <a
-              href="/dashboard/properties/create"
-              class="bg-green-500 w-full text-white text-center px-4 py-2 rounded-lg hover:bg-green-600 transition"
-              >Create</a
-            >
-            <button
-              id="edit-button"
-              class="bg-blue-500 w-full text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition disabled:bg-gray-400 disabled:cursor-not-allowed"
-              disabled
-            >
-              Edit
-            </button>
-            <button
-              id="delete-button"
-              class="bg-red-500 w-full text-white px-4 py-2 rounded-lg hover:bg-red-600 transition disabled:bg-gray-400 disabled:cursor-not-allowed"
-              disabled
-            >
-              Delete
-            </button>
+
+            <div class="mt-6 flex justify-center space-x-6">
+              <a
+                href="/dashboard/properties/create"
+                class="bg-green-500 w-full text-white text-center px-4 py-2 rounded-lg hover:bg-green-600 transition flex items-center justify-center space-x-2"
+              >
+                <i class="fas fa-plus"></i>
+                <span>Create</span>
+              </a>
+              <button
+                id="edit-button"
+                class="bg-blue-500 w-full text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+                disabled
+              >
+                <i class="fas fa-edit"></i>
+                <span>Edit</span>
+              </button>
+              <button
+                id="delete-button"
+                class="bg-red-500 w-full text-white px-4 py-2 rounded-lg hover:bg-red-600 transition disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+                disabled
+              >
+                <i class="fas fa-trash-alt"></i>
+                <span>Delete</span>
+              </button>
+            </div>
           </div>
         </main>
       </div>
     </div>
 
-    <script src="../js/properties.js"></script>
-    <script src="../js/script.js"></script>
+    <script src="/js/dashboard/property/properties.js"></script>
+    <script src="/js/script.js"></script>
   </body>
 </html>

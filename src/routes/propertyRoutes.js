@@ -11,9 +11,17 @@ const {
   deleteProperty,
 } = require("../controllers/propertyController");
 
-router.get("/listall", authenticationMiddleware("owner"), listAll);
-router.get("/listshowcase", authenticationMiddleware("owner"), listShowcase);
-router.post("/create", authenticationMiddleware("owner"), createProperty);
+router.get("/listall", listAll);
+router.get("/listshowcase", listShowcase);
+router.post(
+  "/create",
+  authenticationMiddleware("owner"),
+  upload.fields([
+    { name: "featuredImage", maxCount: 1 },
+    { name: "images", maxCount: 4 },
+  ]),
+  createProperty
+);
 router.put(
   "/edit/:id",
   authenticationMiddleware("owner"),

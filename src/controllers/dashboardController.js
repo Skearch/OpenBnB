@@ -5,7 +5,6 @@ const redirect = [
     try {
       if (!req.user) return res.redirect("/account/login");
       const role = req.user.role;
-
       switch (role) {
         case "owner":
           return res.redirect("/dashboard/overview");
@@ -14,10 +13,8 @@ const redirect = [
         case "guest":
           return res.redirect("/dashboard/guest");
       }
-
-      return res.status(403).send("Access denied");
-    } catch (error) {
-      console.error("Redirect Error:", error);
+      res.status(403).send("Access denied");
+    } catch {
       res.status(500).json({ message: "Server error" });
     }
   },
@@ -25,23 +22,19 @@ const redirect = [
 
 const overview = [(req, res) => res.render("dashboard/overview")];
 const accounts = [(req, res) => res.render("dashboard/accounts")];
-
-const properties = (req, res) => res.render("dashboard/properties");
-const propertiesCreate = (req, res) => res.render("dashboard/propertiesCreate");
+const guest = [(req, res) => res.render("dashboard/guest")];
+const properties = (req, res) => res.render("dashboard/property/properties");
+const propertiesCreate = (req, res) =>
+  res.render("dashboard/property/propertiesCreate");
 
 const propertiesEdit = async (req, res) => {
   try {
     const property = await prisma.property.findUnique({
       where: { id: parseInt(req.params.id) },
     });
-
-    if (!property) {
-      return res.status(404).send("Property not found");
-    }
-
-    res.render("dashboard/propertiesEdit", { property });
-  } catch (error) {
-    console.error("Error fetching property:", error);
+    if (!property) return res.status(404).send("Property not found");
+    res.render("dashboard/property/propertiesEdit", { property });
+  } catch {
     res.status(500).send("Server error");
   }
 };
@@ -53,4 +46,5 @@ module.exports = {
   properties,
   propertiesCreate,
   propertiesEdit,
+  guest,
 };
