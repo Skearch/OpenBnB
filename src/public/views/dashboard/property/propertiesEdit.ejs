@@ -57,9 +57,20 @@
                             </div>
 
                             <div>
-                                <label for="hours" class="block text-sm font-medium">Hour(s)</label>
-                                <input type="number" id="hours" name="hours" class="w-full border rounded-lg p-2"
-                                    min="1" value="<%= property.hours %>" required />
+                            <label for="checkInOutTitle" class="block text-sm font-medium">Check-in/Check-out Title</label>
+                            <input type="text" id="checkInOutTitle" name="checkInOutTitle" class="w-full border rounded-lg p-2" value="<%= property.checkInOutTitle || '' %>" required />
+                            </div>
+                            <div class="flex gap-4">
+
+                            <div>
+                                <label for="checkInTime" class="block text-sm font-medium">Check-in Time</label>
+                                <input type="time" id="checkInTime" name="checkInTime" class="border p-1 rounded" value="<%= property.checkInTime || '' %>" required />
+                            </div>
+                            
+                            <div>
+                                <label for="checkOutTime" class="block text-sm font-medium">Check-out Time</label>
+                                <input type="time" id="checkOutTime" name="checkOutTime" class="border p-1 rounded" value="<%= property.checkOutTime || '' %>" required />
+                            </div>
                             </div>
 
                             <div>
@@ -71,7 +82,7 @@
                             </div>
 
                             <div>
-                                <label for="images" class="block text-sm font-medium">Upload Images</label>
+                                <label for="images" class="block text-sm font-medium">Upload Images (300x200)</label>
                                 <input type="file" id="images" name="images" class="w-full border rounded-lg p-2"
                                     multiple accept="image/*" />
                             </div>

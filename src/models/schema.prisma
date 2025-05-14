@@ -29,7 +29,9 @@ model Property {
   price          Float
   currencySymbol String @default("$")
   address        String?
-  hours          Int @default(24)
+  checkInOutTitle String?
+  checkInTime     String?
+  checkOutTime    String?
   availability   Json @default("{}")
   showcase       Boolean @default(false)
   featuredImage  Bytes?

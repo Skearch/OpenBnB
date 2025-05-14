@@ -40,8 +40,10 @@ const createProperty = async (req, res) => {
       price,
       currencySymbol,
       address,
-      hours,
       showcase,
+      checkInOutTitle,
+      checkInTime,
+      checkOutTime,
     } = req.body;
     const featuredImage = req.files?.featuredImage?.[0]?.buffer;
     const images = req.files?.images?.map((file) => file.buffer) || [];
@@ -60,13 +62,15 @@ const createProperty = async (req, res) => {
         name,
         price: parseFloat(price),
         description,
-        hours: hours ? parseInt(hours) : 24,
         currencySymbol: currencySymbol || "$",
         address: address || "",
         showcase: showcase === "true",
         featuredImage,
         images,
         ownerId: req.user.id,
+        checkInOutTitle,
+        checkInTime,
+        checkOutTime,
       },
     });
     res.status(201).json({ success: true, property });
@@ -83,9 +87,11 @@ const editProperty = async (req, res) => {
       price,
       description,
       showcase,
-      hours,
       currencySymbol,
       address,
+      checkInOutTitle,
+      checkInTime,
+      checkOutTime,
     } = req.body;
     const featuredImage = req.files?.featuredImage?.[0]?.buffer;
     const images = req.files?.images?.map((file) => file.buffer) || [];
@@ -108,13 +114,15 @@ const editProperty = async (req, res) => {
         name,
         price: parseFloat(price),
         description,
-        hours: hours ? parseInt(hours) : 24,
         currencySymbol: currencySymbol || "$",
         address: address || "",
         showcase: showcase === "true",
         featuredImage,
         images,
         ownerId: req.user.id,
+        checkInOutTitle,
+        checkInTime,
+        checkOutTime,
       },
     });
     res.status(200).json({ success: true, property });

@@ -16,10 +16,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     data.properties.forEach((property) => {
       const formattedPrice = property.price
         ? Number(property.price).toLocaleString(undefined, {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
+            maximumFractionDigits: 0,
           })
-        : "0.00";
+        : "0";
       const propertyCard = `
         <div class="bg-white shadow rounded-lg overflow-hidden h-100 w-80 p-4 transition-shadow duration-700 hover:shadow-2xl">
           <img src="${
@@ -34,7 +33,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             <h4 class="text-lg font-semibold">${property.name}</h4>
             <p class="text-gray-600">${
               property.currencySymbol
-            } ${formattedPrice} per night</p>
+            } ${formattedPrice} per ${property.checkInOutTitle}</p>
           </div>
         </div>
       `;
