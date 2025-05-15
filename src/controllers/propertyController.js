@@ -1,6 +1,7 @@
 const { prisma } = require("../config/database");
 const path = require("path");
 const fs = require("fs");
+const multer = require("multer");
 
 const fsPromises = fs.promises;
 
@@ -15,6 +16,17 @@ async function copyImageFile(originalFilename) {
   await fsPromises.copyFile(srcPath, destPath);
   return newFilename;
 }
+
+const uploadsDir = path.join(__dirname, "../public/uploads");
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, uploadsDir),
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname);
+    const base = path.basename(file.originalname, ext);
+    cb(null, `${base}-${Date.now()}${ext}`);
+  },
+});
+const upload = multer({ storage });
 
 class PropertyController {
   static toImageUrls(property) {
@@ -333,7 +345,6 @@ class PropertyController {
           );
           try {
             await fs.promises.unlink(filePath);
-            console.log("Deleted image:", filePath);
           } catch (err) {
             if (err.code !== "ENOENT") {
               console.error("Failed to delete image:", filePath, err);
@@ -396,4 +407,5 @@ module.exports = {
   deleteProperty: PropertyController.deleteProperty,
   toImageUrls: PropertyController.toImageUrls,
   cloneProperty: PropertyController.cloneProperty,
+  upload,
 };
