@@ -1,8 +1,9 @@
 class PropertyTableManager {
-  constructor(propertyList, editButton, deleteButton) {
+  constructor(propertyList, editButton, deleteButton, cloneButton) {
     this.propertyList = propertyList;
     this.editButton = editButton;
     this.deleteButton = deleteButton;
+    this.cloneButton = cloneButton;
     this.selectedPropertyId = null;
     this.init();
   }
@@ -15,6 +16,9 @@ class PropertyTableManager {
     }
     if (this.deleteButton) {
       this.deleteButton.addEventListener("click", () => this.handleDelete());
+    }
+    if (this.cloneButton) {
+      this.cloneButton.addEventListener("click", () => this.handleClone());
     }
     this.fetchProperties();
   }
@@ -29,6 +33,7 @@ class PropertyTableManager {
     this.selectedPropertyId = row.dataset.id;
     if (this.editButton) this.editButton.disabled = false;
     if (this.deleteButton) this.deleteButton.disabled = false;
+    if (this.cloneButton) this.cloneButton.disabled = false;
   }
 
   handleEdit() {
@@ -54,6 +59,33 @@ class PropertyTableManager {
           }
         })
         .catch(() => {});
+    }
+  }
+
+  async handleClone() {
+    if (!this.selectedPropertyId) return;
+    if (
+      !confirm(
+        "Are you sure you want to clone this property? This will create a new property with the same details and images."
+      )
+    )
+      return;
+    try {
+      const createRes = await fetch(
+        `/api/property/clone/${this.selectedPropertyId}`,
+        {
+          method: "POST",
+        }
+      );
+      const createData = await createRes.json();
+      if (createData.success) {
+        alert("Property cloned successfully!");
+        window.location.reload();
+      } else {
+        alert(createData.message || "Failed to clone property.");
+      }
+    } catch {
+      alert("Failed to clone property.");
     }
   }
 
@@ -88,5 +120,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const propertyList = document.getElementById("property-list");
   const editButton = document.getElementById("edit-button");
   const deleteButton = document.getElementById("delete-button");
-  new PropertyTableManager(propertyList, editButton, deleteButton);
+  const cloneButton = document.getElementById("clone-button");
+  new PropertyTableManager(propertyList, editButton, deleteButton, cloneButton);
 });

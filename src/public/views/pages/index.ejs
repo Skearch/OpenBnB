@@ -10,10 +10,9 @@
     />
     <link href="../css/style.css" rel="stylesheet" />
   </head>
-
-  <body class="font-sans">
+  <body class="font-sans bg-gray-50 min-h-screen flex flex-col">
     <%- include('../partials/navbar') %>
-    <main>
+    <main class="flex-1">
       <section class="bg-custom text-white py-32 px-8 text-center">
         <h2 class="text-4xl font-bold mb-6">
           <%= config.Website.Hero.Title %>
@@ -22,13 +21,12 @@
         <div class="flex justify-center space-x-4">
           <a
             href="/listing/browse"
-            class="custom-call-to-action px-8 py-4 rounded-lg flex items-center space-x-2"
+            class="custom-call-to-action px-8 py-4 rounded-lg flex items-center space-x-2 font-semibold"
           >
-            <span> <%= config.Website.Hero.Button %> </span>
+            <span><%= config.Website.Hero.Button %></span>
           </a>
         </div>
       </section>
-
       <section class="py-16 px-8" id="recommend">
         <h3 class="text-2xl font-bold mb-8 text-center">
           <%= config.Website.Recommend.Title %>
@@ -38,20 +36,19 @@
           id="showcase-container"
         ></div>
         <div class="text-center mt-8">
-          <a href="/listing/browse" class="hover:underline">
+          <a
+            href="/listing/browse"
+            class="hover:underline text-black font-semibold"
+          >
             <%= config.Website.Recommend.Button %>
           </a>
         </div>
       </section>
-
       <section class="py-16 px-8 bg-gray-100" id="reviews">
         <h3 class="text-2xl font-bold mb-8 text-center">
           <%= config.Website.Reviews.Title %>
         </h3>
-        <div
-          class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto"
-          id="reviews-container"
-        >
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
           <% if (config.Website.Reviews.List &&
           config.Website.Reviews.List.length > 0) { %> <%
           config.Website.Reviews.List.forEach(function(review) { %>
@@ -66,25 +63,27 @@
           <% } %>
         </div>
       </section>
-
       <section class="py-16 px-8 bg-orange-100 text-center" id="subscribe">
         <h3 class="text-2xl font-bold mb-4">
           <%= config.Website.Subscribe.Title %>
         </h3>
-        <div class="flex justify-center space-x-4 max-w-md mx-auto">
+        <form class="flex justify-center space-x-4 max-w-md mx-auto">
           <input
             type="email"
             placeholder="Email"
             class="flex-1 p-3 border rounded-lg"
+            required
           />
-          <button class="custom-call-to-action px-6 py-3 rounded-lg">
+          <button
+            type="submit"
+            class="custom-call-to-action px-6 py-3 rounded-lg font-semibold"
+          >
             <%= config.Website.Subscribe.Button %>
           </button>
-        </div>
+        </form>
       </section>
     </main>
-
-    <script src="../js/pages/index.js"></script>
     <%- include('../partials/footer') %>
+    <script src="../js/pages/index.js"></script>
   </body>
 </html>

@@ -6,6 +6,7 @@ const path = require("path");
 const bcrypt = require("bcrypt");
 const { prisma } = require("./config/database");
 const routes = require("./routes/mainRoutes");
+const config = require("../config.json");
 
 dotenv.config();
 
@@ -17,41 +18,43 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.use(cookieParser());
 app.use(express.json());
-app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100 }));
+app.use(
+  rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 1000,
+    standardHeaders: true,
+    legacyHeaders: false,
+  })
+);
 
 app.use((req, res, next) => {
   const authenticationMiddleware = require("./middleware/authenticationMiddleware");
   authenticationMiddleware()(req, res, () => {
-    res.locals.config = require("../config.json");
+    res.locals.config = config;
     res.locals.user = req.user || null;
     next();
   });
 });
 
-const createStartupAdmin = async () => {
+async function createStartupAdmin() {
   try {
-    const adminEmail = process.env.ADMIN_EMAIL;
-    const adminPassword = process.env.ADMIN_PASSWORD;
-    const adminName = process.env.ADMIN_NAME;
-
-    if (!adminEmail || !adminPassword || !adminName) {
+    const { ADMIN_EMAIL, ADMIN_PASSWORD, ADMIN_NAME } = process.env;
+    if (!ADMIN_EMAIL || !ADMIN_PASSWORD || !ADMIN_NAME) {
       console.warn(
         "ADMIN_* environment variables are not set. Skipping admin account creation."
       );
       return;
     }
-
     const existingAdmin = await prisma.user.findUnique({
-      where: { email: adminEmail },
+      where: { email: ADMIN_EMAIL },
     });
-
     if (!existingAdmin) {
-      const hashedPassword = await bcrypt.hash(adminPassword, 10);
+      const hashedPassword = await bcrypt.hash(ADMIN_PASSWORD, 10);
       await prisma.user.create({
         data: {
-          email: adminEmail,
+          email: ADMIN_EMAIL,
           password: hashedPassword,
-          name: adminName,
+          name: ADMIN_NAME,
           role: "owner",
         },
       });
@@ -62,8 +65,7 @@ const createStartupAdmin = async () => {
   } catch (error) {
     console.error("Error creating startup admin account:", error);
   }
-};
-
+}
 createStartupAdmin();
 
 app.use("/api", routes.api);

@@ -47,7 +47,7 @@ class PropertyImageEditor {
 
     const img = document.createElement("img");
     img.src = imageFile.isExisting
-      ? `data:image/jpeg;base64,${imageFile.data}`
+      ? imageFile.data
       : URL.createObjectURL(imageFile.data);
     img.classList.add("w-full", "h-full", "object-cover");
     imageWrapper.appendChild(img);
@@ -163,24 +163,31 @@ class PropertyImageEditor {
       return null;
     }
     const formData = new FormData(form);
-    let featuredFile;
-    if (this.featuredImage.isExisting) {
-      featuredFile = this.base64ToBlob(this.featuredImage.data);
-    } else {
-      featuredFile = this.featuredImage.data;
-    }
-    formData.append("featuredImage", featuredFile);
+
+    const existingImageUrls = this.uploadedImages
+      .filter((img) => img.isExisting)
+      .map((img) => img.data.replace("/uploads/", ""));
+
     this.uploadedImages.forEach((img) => {
-      if (img !== this.featuredImage) {
-        let file;
-        if (img.isExisting) {
-          file = this.base64ToBlob(img.data);
-        } else {
-          file = img.data;
-        }
-        formData.append("images", file);
+      if (!img.isExisting) {
+        formData.append("images", img.data);
       }
     });
+
+    if (this.featuredImage.isExisting) {
+      formData.append(
+        "featuredImagePath",
+        this.featuredImage.data.replace("/uploads/", "")
+      );
+    } else {
+      formData.append("featuredImage", this.featuredImage.data);
+    }
+
+    const otherExistingImages = existingImageUrls.filter(
+      (filename) => filename !== formData.get("featuredImagePath")
+    );
+    formData.append("existingImages", JSON.stringify(otherExistingImages));
+
     return formData;
   }
 }

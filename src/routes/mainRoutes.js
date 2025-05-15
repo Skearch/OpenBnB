@@ -7,22 +7,31 @@ const authenticationRoutes = require("./authenticationRoutes");
 const propertyRoutes = require("./propertyRoutes");
 const dashboardRoutes = require("./dashboardRoutes");
 const accountRoutes = require("./accountRoutes");
+const { get: getProperty } = require("../controllers/propertyController");
 
 apiRouter.use("/authentication", authenticationRoutes);
 apiRouter.use("/property", propertyRoutes);
 apiRouter.use("/account", accountRoutes);
 
-pagesRouter.get("/account/register", (req, res) =>
-  res.render("pages/register")
-);
-pagesRouter.get("/account/login", (req, res) => res.render("pages/login"));
-
 pagesRouter.use("/dashboard", dashboardRoutes);
 
-pagesRouter.get("/listing/browse", async (req, res) => {
+pagesRouter.get("/account/register", (req, res) => {
+  res.render("pages/register");
+});
+pagesRouter.get("/account/login", (req, res) => {
+  res.render("pages/login");
+});
+
+pagesRouter.get("/listing/browse", (req, res) => {
   res.render("pages/listing");
 });
-pagesRouter.get("*", async (req, res) => {
+
+pagesRouter.get("/property/:id", (req, res, next) => {
+  req.query.view = "page";
+  getProperty(req, res, next);
+});
+
+pagesRouter.get("*", (req, res) => {
   res.render("pages/index");
 });
 

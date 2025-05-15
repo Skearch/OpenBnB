@@ -24,8 +24,8 @@ model User {
 model Property {
   id             Int @id @default(autoincrement())
   ownerId        Int
-  name           String
-  description    String
+  name           String?
+  description    String?
   price          Float
   currencySymbol String @default("$")
   address        String?
@@ -34,8 +34,8 @@ model Property {
   checkOutTime    String?
   availability   Json @default("{}")
   showcase       Boolean @default(false)
-  featuredImage  Bytes?
-  images         Bytes[] @default([])
+  featuredImagePath String?
+  imagePaths        String[] @default([])
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
   owner          User @relation(fields: [ownerId], references: [id], onDelete: Cascade)

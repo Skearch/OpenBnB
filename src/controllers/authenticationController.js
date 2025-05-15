@@ -15,71 +15,107 @@ const loginSchema = Joi.object({
   password: Joi.string().required(),
 });
 
-const logout = [
-  async (req, res) => {
+class AuthenticationController {
+  static logout = async (req, res) => {
     try {
       res.clearCookie("token");
       res.clearCookie("refreshToken");
       res.redirect("/");
-    } catch {
+    } catch (error) {
+      console.error("Error during logout:", error);
       res.status(500).json({ message: "Server error" });
     }
-  },
-];
+  };
 
-const register = [
-  validateInput(registerSchema),
-  async (req, res) => {
-    const { email, password, name } = req.body;
-    try {
-      const existingUser = await prisma.user.findUnique({ where: { email } });
-      if (existingUser)
-        return res.status(400).json({ message: "User already exists" });
-      const hashedPassword = await bcrypt.hash(password, 10);
-      const user = await prisma.user.create({
-        data: { email, password: hashedPassword, name, role: "guest" },
-      });
-      res.status(201).json({ message: "User registered", userId: user.id });
-    } catch {
-      res.status(500).json({ message: "Server error" });
-    }
-  },
-];
+  static register = [
+    validateInput(registerSchema),
+    async (req, res) => {
+      const { email, password, name } = req.body;
+      try {
+        if (await AuthenticationController.#userExists(email)) {
+          return res.status(400).json({ message: "User already exists" });
+        }
+        const hashedPassword = await AuthenticationController.#hashPassword(
+          password
+        );
+        const user = await prisma.user.create({
+          data: { email, password: hashedPassword, name, role: "guest" },
+        });
+        res.status(201).json({ message: "User registered", userId: user.id });
+      } catch (error) {
+        console.error("Error during registration:", error);
+        res.status(500).json({ message: "Server error" });
+      }
+    },
+  ];
 
-const login = [
-  validateInput(loginSchema),
-  async (req, res) => {
-    const { email, password } = req.body;
-    try {
-      const user = await prisma.user.findUnique({ where: { email } });
-      if (!user)
-        return res.status(400).json({ message: "Invalid credentials" });
-      const isMatch = await bcrypt.compare(password, user.password);
-      if (!isMatch)
-        return res.status(400).json({ message: "Invalid credentials" });
-      const token = jwt.sign(
-        { id: user.id, role: user.role, name: user.name, email: user.email },
-        process.env.JWT_SECRET,
-        { expiresIn: "15m" }
-      );
-      const refreshToken = jwt.sign(
-        { id: user.id, role: user.role, name: user.name, email: user.email },
-        process.env.JWT_REFRESH_SECRET,
-        { expiresIn: "7d" }
-      );
-      res.cookie("token", token, { httpOnly: true, sameSite: "strict" });
-      res.cookie("refreshToken", refreshToken, {
-        httpOnly: true,
-        sameSite: "strict",
-      });
-      res.json({
-        message: "Logged in",
-        user: { id: user.id, role: user.role },
-      });
-    } catch {
-      res.status(500).json({ message: "Server error" });
-    }
-  },
-];
+  static login = [
+    validateInput(loginSchema),
+    async (req, res) => {
+      const { email, password } = req.body;
+      try {
+        const user = await prisma.user.findUnique({ where: { email } });
+        if (
+          !user ||
+          !(await AuthenticationController.#comparePassword(
+            password,
+            user.password
+          ))
+        ) {
+          return res.status(400).json({ message: "Invalid credentials" });
+        }
+        const tokenPayload = {
+          id: user.id,
+          role: user.role,
+          name: user.name,
+          email: user.email,
+        };
+        const token = AuthenticationController.#generateToken(
+          tokenPayload,
+          process.env.JWT_SECRET,
+          "15m"
+        );
+        const refreshToken = AuthenticationController.#generateToken(
+          tokenPayload,
+          process.env.JWT_REFRESH_SECRET,
+          "7d"
+        );
 
-module.exports = { register, login, logout };
+        res.cookie("token", token, { httpOnly: true, sameSite: "strict" });
+        res.cookie("refreshToken", refreshToken, {
+          httpOnly: true,
+          sameSite: "strict",
+        });
+        res.json({
+          message: "Logged in",
+          user: { id: user.id, role: user.role },
+        });
+      } catch (error) {
+        console.error("Error during login:", error);
+        res.status(500).json({ message: "Server error" });
+      }
+    },
+  ];
+
+  static async #userExists(email) {
+    return !!(await prisma.user.findUnique({ where: { email } }));
+  }
+
+  static async #hashPassword(password) {
+    return await bcrypt.hash(password, 10);
+  }
+
+  static async #comparePassword(plain, hash) {
+    return await bcrypt.compare(plain, hash);
+  }
+
+  static #generateToken(payload, secret, expiresIn) {
+    return jwt.sign(payload, secret, { expiresIn });
+  }
+}
+
+module.exports = {
+  register: AuthenticationController.register,
+  login: AuthenticationController.login,
+  logout: AuthenticationController.logout,
+};

@@ -1,18 +1,26 @@
 const express = require("express");
 const router = express.Router();
-const multer = require("multer");
-const upload = multer();
+
 const authenticationMiddleware = require("../middleware/authenticationMiddleware");
 const {
+  get,
   listAll,
   listShowcase,
   createProperty,
   editProperty,
   deleteProperty,
+  cloneProperty,
+  upload,
 } = require("../controllers/propertyController");
 
+router.post("/clone/:id", authenticationMiddleware("owner"), cloneProperty);
+
+router.get("/get/:id", get);
+
 router.get("/listall", listAll);
+
 router.get("/listshowcase", listShowcase);
+
 router.post(
   "/create",
   authenticationMiddleware("owner"),
@@ -22,6 +30,7 @@ router.post(
   ]),
   createProperty
 );
+
 router.put(
   "/edit/:id",
   authenticationMiddleware("owner"),
@@ -31,6 +40,7 @@ router.put(
   ]),
   editProperty
 );
+
 router.delete("/delete/:id", authenticationMiddleware("owner"), deleteProperty);
 
 module.exports = router;

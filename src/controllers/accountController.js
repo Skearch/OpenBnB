@@ -11,74 +11,92 @@ const accountSchema = Joi.object({
   role: Joi.string().valid("guest", "staff", "owner").required(),
 });
 
-const listAll = async (req, res) => {
-  try {
-    const accounts = await prisma.user.findMany({
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        role: true,
-        createdAt: true,
-      },
-    });
-    res.json(accounts);
-  } catch {
-    res.status(500).json({ message: "Server error" });
-  }
-};
-
-const create = [
-  validateInput(accountSchema),
-  async (req, res) => {
-    const { name, email, password, role } = req.body;
+class AccountController {
+  static async listAll(req, res) {
     try {
-      const existingUser = await prisma.user.findUnique({ where: { email } });
-      if (existingUser)
-        return res.status(400).json({ message: "Email is already in use" });
-      const hashedPassword = await bcrypt.hash(password, 10);
-      const account = await prisma.user.create({
-        data: { name, email, password: hashedPassword, role },
+      const accounts = await prisma.user.findMany({
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          role: true,
+          createdAt: true,
+        },
       });
-      res
-        .status(201)
-        .json({ message: "Account created successfully", account });
-    } catch {
+      res.json(accounts);
+    } catch (error) {
+      console.error("Error listing accounts:", error);
       res.status(500).json({ message: "Server error" });
     }
-  },
-];
+  }
 
-const update = [
-  validateInput(accountSchema),
-  async (req, res) => {
-    const { id } = req.params;
-    const { name, email, password, role } = req.body;
-    try {
-      const data = { name, email, role };
-      if (password) {
-        const hashedPassword = await bcrypt.hash(password, 10);
-        data.password = hashedPassword;
+  static create = [
+    validateInput(accountSchema),
+    async (req, res) => {
+      try {
+        const { name, email, password, role } = req.body;
+        if (await AccountController.#userExists(email)) {
+          return res.status(400).json({ message: "Email is already in use" });
+        }
+        const hashedPassword = await AccountController.#hashPassword(password);
+        const account = await prisma.user.create({
+          data: { name, email, password: hashedPassword, role },
+        });
+        res
+          .status(201)
+          .json({ message: "Account created successfully", account });
+      } catch (error) {
+        console.error("Error creating account:", error);
+        res.status(500).json({ message: "Server error" });
       }
-      const account = await prisma.user.update({
-        where: { id: parseInt(id) },
-        data,
-      });
-      res.json({ message: "Account updated successfully", account });
-    } catch {
+    },
+  ];
+
+  static update = [
+    validateInput(accountSchema),
+    async (req, res) => {
+      try {
+        const { id } = req.params;
+        const { name, email, password, role } = req.body;
+        const data = { name, email, role };
+        if (password) {
+          data.password = await AccountController.#hashPassword(password);
+        }
+        const account = await prisma.user.update({
+          where: { id: parseInt(id) },
+          data,
+        });
+        res.json({ message: "Account updated successfully", account });
+      } catch (error) {
+        console.error("Error updating account:", error);
+        res.status(500).json({ message: "Server error" });
+      }
+    },
+  ];
+
+  static async remove(req, res) {
+    try {
+      const { id } = req.params;
+      await prisma.user.delete({ where: { id: parseInt(id) } });
+      res.json({ message: "Account deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting account:", error);
       res.status(500).json({ message: "Server error" });
     }
-  },
-];
-
-const remove = async (req, res) => {
-  const { id } = req.params;
-  try {
-    await prisma.user.delete({ where: { id: parseInt(id) } });
-    res.json({ message: "Account deleted successfully" });
-  } catch {
-    res.status(500).json({ message: "Server error" });
   }
-};
 
-module.exports = { listAll, create, update, remove };
+  static async #userExists(email) {
+    return !!(await prisma.user.findUnique({ where: { email } }));
+  }
+
+  static async #hashPassword(password) {
+    return await bcrypt.hash(password, 10);
+  }
+}
+
+module.exports = {
+  listAll: AccountController.listAll,
+  create: AccountController.create,
+  update: AccountController.update,
+  remove: AccountController.remove,
+};

@@ -1,152 +1,399 @@
 const { prisma } = require("../config/database");
+const path = require("path");
+const fs = require("fs");
 
-const listAll = async (req, res) => {
-  try {
-    const properties = await prisma.property.findMany();
-    const propertiesWithImages = properties.map((property) => ({
+const fsPromises = fs.promises;
+
+async function copyImageFile(originalFilename) {
+  if (!originalFilename) return null;
+  const uploadsDir = path.join(__dirname, "../public/uploads");
+  const ext = path.extname(originalFilename);
+  const base = path.basename(originalFilename, ext);
+  const newFilename = `${base}-copy-${Date.now()}${ext}`;
+  const srcPath = path.join(uploadsDir, originalFilename);
+  const destPath = path.join(uploadsDir, newFilename);
+  await fsPromises.copyFile(srcPath, destPath);
+  return newFilename;
+}
+
+class PropertyController {
+  static toImageUrls(property) {
+    return {
       ...property,
-      featuredImage: property.featuredImage
-        ? Buffer.from(property.featuredImage).toString("base64")
+      featuredImage: property.featuredImagePath
+        ? `/uploads/${property.featuredImagePath}`
         : null,
-    }));
-    res.json({ success: true, properties: propertiesWithImages });
-  } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
+      images: property.imagePaths
+        ? property.imagePaths.map((img) => `/uploads/${img}`)
+        : [],
+    };
   }
-};
 
-const listShowcase = async (req, res) => {
-  try {
-    const properties = await prisma.property.findMany({
-      where: { showcase: true },
-    });
-    const propertiesWithImages = properties.map((property) => ({
-      ...property,
-      featuredImage: property.featuredImage
-        ? Buffer.from(property.featuredImage).toString("base64")
-        : null,
-    }));
-    res.json(propertiesWithImages);
-  } catch {
-    res.status(500).json({ message: "Server error" });
+  static async cloneProperty(req, res) {
+    try {
+      const { id } = req.params;
+      const original = await prisma.property.findUnique({
+        where: { id: parseInt(id) },
+      });
+      if (!original) {
+        return res
+          .status(404)
+          .json({ success: false, message: "Original property not found." });
+      }
+
+      let newFeaturedImagePath = null;
+      if (original.featuredImagePath) {
+        newFeaturedImagePath = await copyImageFile(original.featuredImagePath);
+      }
+
+      let newImagePaths = [];
+      if (original.imagePaths && original.imagePaths.length > 0) {
+        for (const img of original.imagePaths) {
+          const newImg = await copyImageFile(img);
+          if (newImg) newImagePaths.push(newImg);
+        }
+      }
+
+      const cloned = await prisma.property.create({
+        data: {
+          ownerId: original.ownerId,
+          name: original.name + " (Copy)",
+          description: original.description,
+          price: original.price,
+          currencySymbol: original.currencySymbol,
+          address: original.address,
+          showcase: original.showcase,
+          checkInOutTitle: original.checkInOutTitle,
+          checkInTime: original.checkInTime,
+          checkOutTime: original.checkOutTime,
+          featuredImagePath: newFeaturedImagePath,
+          imagePaths: newImagePaths,
+        },
+      });
+
+      res.status(201).json({ success: true, property: cloned });
+    } catch (err) {
+      console.error(err);
+      res
+        .status(500)
+        .json({ success: false, message: "Failed to clone property." });
+    }
   }
-};
 
-const createProperty = async (req, res) => {
-  try {
-    const {
-      name,
-      description,
-      price,
-      currencySymbol,
-      address,
-      showcase,
-      checkInOutTitle,
-      checkInTime,
-      checkOutTime,
-    } = req.body;
-    const featuredImage = req.files?.featuredImage?.[0]?.buffer;
-    const images = req.files?.images?.map((file) => file.buffer) || [];
-    if (images.length + (featuredImage ? 1 : 0) < 2) {
-      return res
-        .status(400)
-        .json({ message: "You must upload at least 2 images." });
+  static async listAll(req, res) {
+    try {
+      const page = parseInt(req.query.page, 10) || 1;
+      const limit = parseInt(req.query.limit, 10) || 10;
+      const skip = (page - 1) * limit;
+
+      const total = await prisma.property.count();
+
+      const properties = await prisma.property.findMany({
+        skip,
+        take: limit,
+      });
+
+      const propertiesWithImages = properties.map(
+        PropertyController.toImageUrls
+      );
+
+      res.json({
+        success: true,
+        properties: propertiesWithImages,
+        pagination: {
+          total,
+          page,
+          limit,
+          totalPages: Math.ceil(total / limit),
+        },
+      });
+    } catch (err) {
+      res.status(500).json({ success: false, message: err.message });
     }
-    if (!featuredImage) {
-      return res
-        .status(400)
-        .json({ message: "You must select one image as the featured image." });
+  }
+
+  static async listShowcase(req, res) {
+    try {
+      const page = parseInt(req.query.page, 10) || 1;
+      const limit = parseInt(req.query.limit, 10) || 10;
+      const skip = (page - 1) * limit;
+
+      const total = await prisma.property.count({
+        where: { showcase: true },
+      });
+
+      const properties = await prisma.property.findMany({
+        where: { showcase: true },
+        skip,
+        take: limit,
+      });
+
+      const propertiesWithImages = properties.map(
+        PropertyController.toImageUrls
+      );
+
+      res.json({
+        success: true,
+        properties: propertiesWithImages,
+        pagination: {
+          total,
+          page,
+          limit,
+          totalPages: Math.ceil(total / limit),
+        },
+      });
+    } catch {
+      res.status(500).json({ message: "Server error" });
     }
-    const property = await prisma.property.create({
-      data: {
+  }
+
+  static #parseImagePaths(imagePaths) {
+    if (typeof imagePaths === "string") {
+      try {
+        return JSON.parse(imagePaths);
+      } catch {
+        return [];
+      }
+    }
+    return Array.isArray(imagePaths) ? imagePaths : [];
+  }
+
+  static async createProperty(req, res) {
+    try {
+      let {
         name,
-        price: parseFloat(price),
         description,
-        currencySymbol: currencySymbol || "$",
-        address: address || "",
-        showcase: showcase === "true",
-        featuredImage,
-        images,
-        ownerId: req.user.id,
+        price,
+        currencySymbol,
+        address,
+        showcase,
         checkInOutTitle,
         checkInTime,
         checkOutTime,
-      },
-    });
-    res.status(201).json({ success: true, property });
-  } catch {
-    res.status(500).json({ message: "Server error" });
-  }
-};
+        featuredImagePath,
+        imagePaths,
+      } = req.body;
 
-const editProperty = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const {
-      name,
-      price,
-      description,
-      showcase,
-      currencySymbol,
-      address,
-      checkInOutTitle,
-      checkInTime,
-      checkOutTime,
-    } = req.body;
-    const featuredImage = req.files?.featuredImage?.[0]?.buffer;
-    const images = req.files?.images?.map((file) => file.buffer) || [];
-    if (images.length < 1) {
-      return res
-        .status(400)
-        .json({ message: "You must upload at least 1 additional image." });
+      imagePaths = PropertyController.#parseImagePaths(imagePaths);
+
+      const featuredImage =
+        req.files?.featuredImage?.[0]?.filename || featuredImagePath;
+      const images =
+        req.files?.images?.map((file) => file.filename) || imagePaths;
+
+      if (images.length + (featuredImage ? 1 : 0) < 2) {
+        return res
+          .status(400)
+          .json({ message: "You must upload at least 2 images." });
+      }
+      if (!featuredImage) {
+        return res.status(400).json({
+          message: "You must select one image as the featured image.",
+        });
+      }
+
+      const property = await prisma.property.create({
+        data: {
+          name,
+          price: parseFloat(price),
+          description,
+          currencySymbol: currencySymbol || "$",
+          address: address || "",
+          showcase: showcase === "true" || showcase === true,
+          featuredImagePath: featuredImage,
+          imagePaths: images.filter(Boolean),
+          ownerId: req.user.id,
+          checkInOutTitle,
+          checkInTime,
+          checkOutTime,
+        },
+      });
+      res.status(201).json({ success: true, property });
+    } catch (err) {
+      console.error("Error creating property:", err);
+      res.status(500).json({ message: "Server error" });
     }
-    if (!featuredImage) {
-      return res
-        .status(400)
-        .json({ message: "You must select one image as the featured image." });
-    }
-    if (!name || !price) {
-      return res.status(400).json({ message: "Name and price are required." });
-    }
-    const property = await prisma.property.update({
-      where: { id: parseInt(id) },
-      data: {
+  }
+
+  static async editProperty(req, res) {
+    try {
+      const { id } = req.params;
+      const {
         name,
-        price: parseFloat(price),
+        price,
         description,
-        currencySymbol: currencySymbol || "$",
-        address: address || "",
-        showcase: showcase === "true",
-        featuredImage,
-        images,
-        ownerId: req.user.id,
+        showcase,
+        currencySymbol,
+        address,
         checkInOutTitle,
         checkInTime,
         checkOutTime,
-      },
-    });
-    res.status(200).json({ success: true, property });
-  } catch {
-    res.status(500).json({ message: "Server error" });
-  }
-};
+        featuredImagePath,
+        existingImages,
+      } = req.body;
 
-const deleteProperty = async (req, res) => {
-  try {
-    const { id } = req.params;
-    await prisma.property.delete({ where: { id: parseInt(id) } });
-    res
-      .status(200)
-      .json({ success: true, message: "Property deleted successfully" });
-  } catch {
-    res.status(500).json({ message: "Server error" });
+      const oldProperty = await prisma.property.findUnique({
+        where: { id: parseInt(id) },
+      });
+
+      let imagePaths = [];
+      if (existingImages) {
+        imagePaths = JSON.parse(existingImages);
+      }
+
+      if (req.files?.images) {
+        imagePaths = imagePaths.concat(
+          req.files.images.map((file) => file.filename)
+        );
+      }
+
+      let featuredImageFilename = featuredImagePath;
+      if (req.files?.featuredImage?.[0]) {
+        featuredImageFilename = req.files.featuredImage[0].filename;
+      }
+
+      if (imagePaths.length + (featuredImageFilename ? 1 : 0) < 2) {
+        return res
+          .status(400)
+          .json({ message: "You must upload at least 2 images." });
+      }
+      if (!featuredImageFilename) {
+        return res.status(400).json({
+          message: "You must select one image as the featured image.",
+        });
+      }
+
+      const oldImages = [
+        ...(oldProperty.imagePaths || []),
+        oldProperty.featuredImagePath,
+      ].filter(Boolean);
+
+      const newImages = [...imagePaths, featuredImageFilename].filter(Boolean);
+
+      const imagesToDelete = oldImages.filter(
+        (img) => !newImages.includes(img)
+      );
+
+      imagesToDelete.forEach((filename) => {
+        const filePath = path.join(__dirname, "../public/uploads", filename);
+        fs.unlink(filePath, (err) => {
+          if (err && err.code !== "ENOENT") {
+            console.error("Failed to delete image:", filePath, err);
+          }
+        });
+      });
+
+      const property = await prisma.property.update({
+        where: { id: parseInt(id) },
+        data: {
+          name,
+          price: parseFloat(price),
+          description,
+          currencySymbol: currencySymbol || "$",
+          address: address || "",
+          showcase: showcase === "true",
+          featuredImagePath: featuredImageFilename,
+          imagePaths,
+          ownerId: req.user.id,
+          checkInOutTitle,
+          checkInTime,
+          checkOutTime,
+        },
+      });
+      res.status(200).json({ success: true, property });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: "Server error" });
+    }
   }
-};
+
+  static async deleteProperty(req, res) {
+    try {
+      const { id } = req.params;
+      const property = await prisma.property.findUnique({
+        where: { id: parseInt(id) },
+      });
+
+      if (!property) {
+        return res.status(404).json({ message: "Property not found" });
+      }
+
+      const imagesToDelete = [
+        ...(property.imagePaths || []),
+        property.featuredImagePath,
+      ].filter(Boolean);
+
+      await Promise.all(
+        imagesToDelete.map(async (filename) => {
+          const cleanFilename = filename.replace(/^\/?uploads\//, "");
+          const filePath = path.join(
+            __dirname,
+            "../public/uploads",
+            cleanFilename
+          );
+          try {
+            await fs.promises.unlink(filePath);
+            console.log("Deleted image:", filePath);
+          } catch (err) {
+            if (err.code !== "ENOENT") {
+              console.error("Failed to delete image:", filePath, err);
+            }
+          }
+        })
+      );
+
+      await prisma.property.delete({ where: { id: parseInt(id) } });
+
+      res
+        .status(200)
+        .json({ success: true, message: "Property deleted successfully" });
+    } catch (err) {
+      res.status(500).json({ message: "Server error" });
+    }
+  }
+
+  static async get(req, res) {
+    try {
+      const { id } = req.params;
+      if (!id) {
+        return res.status(400).json({ message: "Property ID is required." });
+      }
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid property ID." });
+      }
+      const property = await prisma.property.findUnique({
+        where: { id: parseInt(id) },
+      });
+      if (!property) {
+        if (req.query.view === "page") {
+          return res.status(404).render("pages/404");
+        }
+        return res.json({ success: false, property: null });
+      }
+      const propertyWithImages = PropertyController.toImageUrls(property);
+      if (req.query.view === "page") {
+        return res.render("pages/property", {
+          property: propertyWithImages,
+          propertyId: property.id,
+        });
+      }
+      res.json({ success: true, property: propertyWithImages });
+    } catch (err) {
+      if (req.query.view === "page") {
+        return res.status(500).render("pages/500");
+      }
+      res.status(500).json({ success: false, message: err.message });
+    }
+  }
+}
 
 module.exports = {
-  listAll,
-  listShowcase,
-  createProperty,
-  editProperty,
-  deleteProperty,
+  get: PropertyController.get,
+  listAll: PropertyController.listAll,
+  listShowcase: PropertyController.listShowcase,
+  createProperty: PropertyController.createProperty,
+  editProperty: PropertyController.editProperty,
+  deleteProperty: PropertyController.deleteProperty,
+  toImageUrls: PropertyController.toImageUrls,
+  cloneProperty: PropertyController.cloneProperty,
 };
