@@ -8,6 +8,7 @@ const {
   propertiesCreate,
   propertiesEdit,
   guest,
+  verification,
 } = require("../controllers/dashboardController");
 const { logout } = require("../controllers/authenticationController");
 
@@ -15,6 +16,7 @@ const dashboardRoutes = express.Router();
 
 dashboardRoutes.get("/redirect", redirect);
 dashboardRoutes.get("/logout", logout);
+dashboardRoutes.get("/verification", authenticationMiddleware("guest"), verification);
 dashboardRoutes.get("/accounts", authenticationMiddleware("owner"), accounts);
 dashboardRoutes.get("/overview", authenticationMiddleware("owner"), overview);
 

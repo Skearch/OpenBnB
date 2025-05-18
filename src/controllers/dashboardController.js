@@ -7,12 +7,22 @@ class DashboardController {
       if (!req.user) {
         return res.redirect("/account/login");
       }
+      const { role, email } = req.user;
+      if (role === "guest") {
+        const user = await prisma.user.findUnique({ where: { email } });
+        if (!user) {
+          return res.redirect("/account/login");
+        }
+        if (!user.verified) {
+          return res.redirect("/dashboard/verification");
+        }
+        return res.redirect("/dashboard/guest");
+      }
       const redirectMap = {
         owner: "/dashboard/overview",
         staff: "/dashboard/staff",
-        guest: "/dashboard/guest",
       };
-      const destination = redirectMap[req.user.role];
+      const destination = redirectMap[role];
       if (destination) {
         return res.redirect(destination);
       }
@@ -21,6 +31,28 @@ class DashboardController {
       console.error("Error in redirect:", error);
       res.status(500).json({ message: "Server error" });
     }
+  }
+
+  static async verification(req, res) {
+    if (req.user && !req.user.verified) {
+      const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+      await prisma.user.update({
+        where: { email: req.user.email },
+        data: { verificationCode },
+      });
+      await require("../services/emailService").sendMail({
+        to: req.user.email,
+        subject: "Verify your email",
+        html: `<p>Hello ${req.user.name},</p>
+             <p>Your verification code is: <b>${verificationCode}</b></p>
+             <p>Enter this code to verify your account.</p>`,
+      });
+    }
+    res.render("dashboard/verification", {
+      email: req.user ? req.user.email : "",
+      config: res.locals.config,
+      user: req.user,
+    });
   }
 
   static overview(req, res) {
@@ -76,4 +108,5 @@ module.exports = {
   propertiesCreate: DashboardController.propertiesCreate,
   propertiesEdit: DashboardController.propertiesEdit,
   guest: DashboardController.guest,
+  verification: DashboardController.verification,
 };

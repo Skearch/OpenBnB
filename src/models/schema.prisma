@@ -13,6 +13,8 @@ model User {
   password         String
   role             String
   name             String
+  verified         Boolean @default(false)
+  verificationCode String?
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
   messagesReceived Message[] @relation("Receiver")
