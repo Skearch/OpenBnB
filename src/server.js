@@ -72,6 +72,11 @@ app.use("/api", routes.api);
 app.use("/", routes.pages);
 
 app.use((req, res) => {
+  if (req.path.startsWith("/api/")) {
+    return res
+      .status(404)
+      .json({ success: false, message: "API endpoint not found" });
+  }
   res.status(404).send("Page not found");
 });
 

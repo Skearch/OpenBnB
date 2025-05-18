@@ -2,28 +2,45 @@ const { prisma } = require("../config/database");
 const path = require("path");
 const fs = require("fs");
 const multer = require("multer");
+const crypto = require("crypto");
 
-const fsPromises = fs.promises;
+class FileHelper {
+  static uploadsDir = path.join(__dirname, "../public/uploads");
 
-async function copyImageFile(originalFilename) {
-  if (!originalFilename) return null;
-  const uploadsDir = path.join(__dirname, "../public/uploads");
-  const ext = path.extname(originalFilename);
-  const base = path.basename(originalFilename, ext);
-  const newFilename = `${base}-copy-${Date.now()}${ext}`;
-  const srcPath = path.join(uploadsDir, originalFilename);
-  const destPath = path.join(uploadsDir, newFilename);
-  await fsPromises.copyFile(srcPath, destPath);
-  return newFilename;
+  static async copyImageFile(originalFilename) {
+    if (!originalFilename) return null;
+    const ext = path.extname(originalFilename);
+    const randomName = crypto.randomBytes(16).toString("hex");
+    const newFilename = `${randomName}${ext}`;
+    const srcPath = path.join(this.uploadsDir, originalFilename);
+    const destPath = path.join(this.uploadsDir, newFilename);
+    await fs.promises.copyFile(srcPath, destPath);
+    return newFilename;
+  }
+
+  static async deleteFiles(filenames) {
+    await Promise.all(
+      filenames.map(async (filename) => {
+        const cleanFilename = filename.replace(/^\/?uploads\//, "");
+        const filePath = path.join(this.uploadsDir, cleanFilename);
+        try {
+          await fs.promises.unlink(filePath);
+        } catch (err) {
+          if (err.code !== "ENOENT") {
+            console.error("Failed to delete image:", filePath, err);
+          }
+        }
+      })
+    );
+  }
 }
 
-const uploadsDir = path.join(__dirname, "../public/uploads");
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, uploadsDir),
+  destination: (req, file, cb) => cb(null, FileHelper.uploadsDir),
   filename: (req, file, cb) => {
     const ext = path.extname(file.originalname);
-    const base = path.basename(file.originalname, ext);
-    cb(null, `${base}-${Date.now()}${ext}`);
+    const randomName = crypto.randomBytes(16).toString("hex");
+    cb(null, `${randomName}${ext}`);
   },
 });
 const upload = multer({ storage });
@@ -55,13 +72,13 @@ class PropertyController {
 
       let newFeaturedImagePath = null;
       if (original.featuredImagePath) {
-        newFeaturedImagePath = await copyImageFile(original.featuredImagePath);
+        newFeaturedImagePath = await FileHelper.copyImageFile(original.featuredImagePath);
       }
 
       let newImagePaths = [];
       if (original.imagePaths && original.imagePaths.length > 0) {
         for (const img of original.imagePaths) {
-          const newImg = await copyImageFile(img);
+          const newImg = await FileHelper.copyImageFile(img);
           if (newImg) newImagePaths.push(newImg);
         }
       }
@@ -105,9 +122,7 @@ class PropertyController {
         take: limit,
       });
 
-      const propertiesWithImages = properties.map(
-        PropertyController.toImageUrls
-      );
+      const propertiesWithImages = properties.map(PropertyController.toImageUrls);
 
       res.json({
         success: true,
@@ -140,9 +155,7 @@ class PropertyController {
         take: limit,
       });
 
-      const propertiesWithImages = properties.map(
-        PropertyController.toImageUrls
-      );
+      const propertiesWithImages = properties.map(PropertyController.toImageUrls);
 
       res.json({
         success: true,
@@ -286,14 +299,7 @@ class PropertyController {
         (img) => !newImages.includes(img)
       );
 
-      imagesToDelete.forEach((filename) => {
-        const filePath = path.join(__dirname, "../public/uploads", filename);
-        fs.unlink(filePath, (err) => {
-          if (err && err.code !== "ENOENT") {
-            console.error("Failed to delete image:", filePath, err);
-          }
-        });
-      });
+      FileHelper.deleteFiles(imagesToDelete);
 
       const property = await prisma.property.update({
         where: { id: parseInt(id) },
@@ -335,23 +341,7 @@ class PropertyController {
         property.featuredImagePath,
       ].filter(Boolean);
 
-      await Promise.all(
-        imagesToDelete.map(async (filename) => {
-          const cleanFilename = filename.replace(/^\/?uploads\//, "");
-          const filePath = path.join(
-            __dirname,
-            "../public/uploads",
-            cleanFilename
-          );
-          try {
-            await fs.promises.unlink(filePath);
-          } catch (err) {
-            if (err.code !== "ENOENT") {
-              console.error("Failed to delete image:", filePath, err);
-            }
-          }
-        })
-      );
+      await FileHelper.deleteFiles(imagesToDelete);
 
       await prisma.property.delete({ where: { id: parseInt(id) } });
 

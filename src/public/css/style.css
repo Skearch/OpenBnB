@@ -15,54 +15,15 @@ main {
 }
 
 .header-custom {
-    position: sticky;
-    top: 0;
-    z-index: 10;
-    height: 64px;
     background-color: #78685c;
-}
-
-.sidebar-custom {
-    width: 250px;
-    transition: transform 0.3s ease-in-out;
-}
-
-.sidebar-custom.hidden {
-    transform: translateX(-100%);
-}
-
-@media (max-width: 768px) {
-    .sidebar-custom {
-        width: 200px;
-    }
-}
-
-.content-wrapper {
-    margin-left: 250px;
-    transition: margin-left 0.3s ease-in-out;
-}
-
-@media (max-width: 768px) {
-    .content-wrapper {
-        margin-left: 0;
-    }
 }
 
 .footer-custom {
     background-color: #78685c;
-    margin-top: auto;
 }
 
 .brand-logo {
     font-family: 'Arial', sans-serif;
-}
-
-.card {
-    margin-bottom: 20px;
-}
-
-.header-custom {
-    background-color: #78685c;
 }
 
 .bg-custom {
@@ -89,14 +50,19 @@ main {
     color: #000;
 }
 
-.custom-button {
-    background-color: white;
-    color: #000;
+.custom-button,
+.custom-button.bg-black,
+.custom-button.bg-black:focus,
+.custom-button.bg-black:active {
+    background-color: white !important;
+    color: #000 !important;
+    border: none !important;
 }
 
-.custom-button:hover {
-    background-color: lightgray;
-    color: #000;
+.custom-button:hover,
+.custom-button.bg-black:hover {
+    background-color: lightgray !important;
+    color: #000 !important;
 }
 
 .custom-call-to-action {

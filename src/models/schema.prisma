@@ -18,7 +18,7 @@ model User {
   messagesReceived Message[] @relation("Receiver")
   messagesSent     Message[] @relation("Sender")
   properties       Property[]
-  reservations     Reservation[]
+  bookings     Booking[]
 }
 
 model Property {
@@ -39,10 +39,10 @@ model Property {
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
   owner          User @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  reservations   Reservation[]
+  bookings   Booking[]
 }
 
-model Reservation {
+model Booking {
   id         Int @id @default(autoincrement())
   propertyId Int
   guestId    Int

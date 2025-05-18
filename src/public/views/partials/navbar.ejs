@@ -1,22 +1,61 @@
-<header
-  class="header-custom text-white py-4 px-12 flex justify-between items-center"
->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+<header class="header-custom sticky top-0 text-white py-4 px-4 sm:px-12 flex justify-between items-center z-50">
   <div class="flex items-center">
-    <h1 class="text-2xl font-bold"><%= config.Business.Name %></h1>
+    <h1 class="text-2xl font-bold">
+      <%= config.Business.Name %>
+    </h1>
   </div>
-  <nav class="flex items-center space-x-4">
+
+  <button id="navbarToggle"
+    class="sm:hidden text-white focus:outline-none focus:ring-2 focus:ring-gray-500 rounded z-50"
+    aria-label="Open navigation" type="button">
+    <i class="fas fa-bars text-2xl"></i>
+  </button>
+
+  <nav class="hidden sm:flex items-center space-x-4">
     <a href="/" class="hover:underline">Home</a>
     <a href="/listing/browse" class="hover:underline">Browse</a>
     <a href="/#recommend" class="hover:underline">Best Picks</a>
     <a href="/#subscribe" class="hover:underline">Subscribe</a>
     <% if (user) { %>
-    <a href="/dashboard/redirect">
-      <button class="custom-button px-4 py-2 rounded-full">Dashboard</button>
-    </a>
-    <% } else { %>
-    <a href="/account/login">
-      <button class="custom-button px-4 py-2 rounded-full">Sign In</button>
-    </a>
-    <% } %>
+      <a href="/dashboard/redirect">
+        <button class="custom-button bg-black px-4 py-2 rounded-full">Dashboard</button>
+      </a>
+      <% } else { %>
+        <a href="/account/login">
+          <button class="custom-button bg-black px-4 py-2 rounded-full">Sign In</button>
+        </a>
+        <% } %>
+  </nav>
+
+  <div id="mobileNavOverlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden" aria-hidden="true"></div>
+  <nav id="mobileNav"
+    class="fixed top-0 right-0 w-64 h-full bg-white text-black z-50 transform translate-x-full transition-transform duration-300 ease-in-out flex flex-col p-6 space-y-4 sm:hidden"
+    aria-label="Mobile navigation">
+    <div class="flex justify-between items-center mb-6">
+      <h2 class="text-xl font-bold">
+        <%= config.Business.Name %>
+      </h2>
+      <button id="closeMobileNav" class="text-black focus:outline-none focus:ring-2 focus:ring-gray-500 rounded"
+        aria-label="Close navigation" type="button">
+        <i class="fas fa-times text-2xl"></i>
+      </button>
+    </div>
+    <a href="/" class="hover:underline">Home</a>
+    <a href="/listing/browse" class="hover:underline">Browse</a>
+    <a href="/#recommend" class="hover:underline">Best Picks</a>
+    <a href="/#subscribe" class="hover:underline">Subscribe</a>
+    <% if (user) { %>
+      <a href="/dashboard/redirect">
+        <button class="custom-button bg-white text-black px-4 py-2 rounded-full">Dashboard</button>
+      </a>
+      <% } else { %>
+        <a href="/account/login">
+          <button class="custom-button bg-white text-black px-4 py-2 rounded-full">Sign In</button>
+        </a>
+        <% } %>
   </nav>
 </header>
+
+<script src="../js/partials/navbar.js"></script>

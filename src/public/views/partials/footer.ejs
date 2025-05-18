@@ -1,8 +1,12 @@
-<footer class="footer-custom text-white py-8 px-8">
+<footer class="footer-custom text-white py-8 px-8" style="margin-top: auto;">
   <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
     <div>
-      <h4 class="text-lg font-semibold mb-4"><%= config.Business.Name %></h4>
-      <p><%= config.Website.Footer.Description %></p>
+      <h4 class="text-lg font-semibold mb-4">
+        <%= config.Business.Name %>
+      </h4>
+      <p>
+        <%= config.Website.FooterDescription || config.Website.Footer.Description %>
+      </p>
     </div>
     <div>
       <h4 class="text-lg font-semibold mb-4">About Us</h4>
@@ -15,8 +19,30 @@
     </div>
     <div>
       <h4 class="text-lg font-semibold mb-4">Contact</h4>
-      <p>Email: <%= config.Business.Email %></p>
-      <p>Phone: <%= config.Business.PhoneNumber %></p>
+      <p>Email: <%= config.Business.Email %>
+      </p>
+      <p>Phone: <%= config.Business.PhoneNumber %>
+      </p>
+      <div class="flex space-x-3 mt-2">
+        <% if (config.Business.SocialMedia?.Facebook) { %>
+          <a href="<%= config.Business.SocialMedia.Facebook %>" target="_blank" aria-label="Facebook"
+            class="hover:text-blue-400">
+            <i class="fab fa-facebook-f"></i>
+          </a>
+          <% } %>
+            <% if (config.Business.SocialMedia?.Instagram) { %>
+              <a href="<%= config.Business.SocialMedia.Instagram %>" target="_blank" aria-label="Instagram"
+                class="hover:text-pink-400">
+                <i class="fab fa-instagram"></i>
+              </a>
+              <% } %>
+                <% if (config.Business.SocialMedia?.Twitter) { %>
+                  <a href="<%= config.Business.SocialMedia.Twitter %>" target="_blank" aria-label="Twitter"
+                    class="hover:text-blue-300">
+                    <i class="fab fa-twitter"></i>
+                  </a>
+                  <% } %>
+      </div>
     </div>
   </div>
 </footer>

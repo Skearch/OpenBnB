@@ -42,9 +42,10 @@ class AccountController {
         const account = await prisma.user.create({
           data: { name, email, password: hashedPassword, role },
         });
-        res
-          .status(201)
-          .json({ message: "Account created successfully", account });
+        res.status(201).json({
+          message: "Account created successfully",
+          account,
+        });
       } catch (error) {
         console.error("Error creating account:", error);
         res.status(500).json({ message: "Server error" });
@@ -63,10 +64,13 @@ class AccountController {
           data.password = await AccountController.#hashPassword(password);
         }
         const account = await prisma.user.update({
-          where: { id: parseInt(id) },
+          where: { id: parseInt(id, 10) },
           data,
         });
-        res.json({ message: "Account updated successfully", account });
+        res.json({
+          message: "Account updated successfully",
+          account,
+        });
       } catch (error) {
         console.error("Error updating account:", error);
         res.status(500).json({ message: "Server error" });
@@ -77,7 +81,7 @@ class AccountController {
   static async remove(req, res) {
     try {
       const { id } = req.params;
-      await prisma.user.delete({ where: { id: parseInt(id) } });
+      await prisma.user.delete({ where: { id: parseInt(id, 10) } });
       res.json({ message: "Account deleted successfully" });
     } catch (error) {
       console.error("Error deleting account:", error);
