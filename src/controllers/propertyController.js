@@ -376,6 +376,7 @@ class PropertyController {
         return res.render("pages/property", {
           property: propertyWithImages,
           propertyId: property.id,
+          request: req,
         });
       }
       res.json({ success: true, property: propertyWithImages });

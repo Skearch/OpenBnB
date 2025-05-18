@@ -9,25 +9,22 @@ class ListingsRenderer {
     properties.forEach((property) => {
       const formattedPrice = property.price
         ? Number(property.price).toLocaleString(undefined, {
-            maximumFractionDigits: 0,
-          })
+          maximumFractionDigits: 0,
+        })
         : "0";
       const propertyCard = `
         <a href="/property/${property.id}" class="block">
           <div class="bg-white shadow rounded-lg overflow-hidden h-100 w-80 p-4 transition-shadow duration-700 hover:shadow-2xl">
-              <img src="${
-                property.featuredImage
-                  ? property.featuredImage
-                  : "https://placehold.co/300x200"
-              }"
-              alt="${
-                property.name
-              }" class="w-full h-48 object-cover rounded-md" />
+              <img src="${property.featuredImage
+          ? property.featuredImage
+          : "https://placehold.co/300x200"
+        }"
+              alt="${property.name
+        }" class="w-full h-48 object-cover rounded-md" />
             <div class="p-4">
               <h4 class="text-lg font-semibold">${property.name}</h4>
-              <p class="text-gray-600">${
-                property.currencySymbol
-              } ${formattedPrice} per ${property.checkInOutTitle}</p>
+              <p class="text-gray-600">${property.currencySymbol
+        } ${formattedPrice} per ${property.checkInOutTitle}</p>
             </div>
           </div>
         </a>
@@ -57,8 +54,8 @@ class Pagination {
       btn.className =
         "mx-1 px-3 py-1 rounded border " +
         (i === currentPage
-          ? "bg-blue-500 text-white"
-          : "bg-white text-blue-500 border-blue-500 hover:bg-blue-100");
+          ? "bg-black text-blue-500 border-blue-500"
+          : "bg-black text-white");
       btn.addEventListener("click", () => this.onPageChange(i));
       this.paginationEl.appendChild(btn);
     }
@@ -75,7 +72,7 @@ class ListingsPage {
       this.loadPage(page)
     );
     this.currentPage = 1;
-    this.limit = 10;
+    this.limit = 6;
     this.init();
   }
 

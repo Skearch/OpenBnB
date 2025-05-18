@@ -86,6 +86,20 @@ class AuthenticationController {
           httpOnly: true,
           sameSite: "strict",
         });
+
+        const rdirect = req.query.rdirect;
+        if (
+          rdirect &&
+          typeof rdirect === "string" &&
+          /^\/[^\s]*$/.test(rdirect)
+        ) {
+          return res.json({
+            message: "Logged in",
+            user: { id: user.id, role: user.role },
+            redirect: rdirect,
+          });
+        }
+
         res.json({
           message: "Logged in",
           user: { id: user.id, role: user.role },

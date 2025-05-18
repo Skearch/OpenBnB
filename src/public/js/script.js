@@ -1,56 +1,64 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const sidebar = document.getElementById("sidebar");
-  const sidebarToggle = document.getElementById("sidebarToggle");
-  const closeSidebar = document.getElementById("closeSidebar");
-  const sidebarOverlay = document.getElementById("sidebarOverlay");
-  const logoutButton = document.getElementById("logout-button");
-
-  if (!sidebar || !sidebarToggle || !closeSidebar || !sidebarOverlay) {
-    console.error("One or more sidebar elements are missing.");
-    return;
+class SidebarManager {
+  constructor() {
+    this.sidebar = document.getElementById("sidebar");
+    this.sidebarToggle = document.getElementById("sidebarToggle");
+    this.closeSidebar = document.getElementById("closeSidebar");
+    this.sidebarOverlay = document.getElementById("sidebarOverlay");
+    this.logoutButton = document.getElementById("logout-button");
+    this.init();
   }
 
-  const toggleSidebar = () => {
-    const isOpen = !sidebar.classList.contains("-translate-x-full");
-    sidebar.classList.toggle("-translate-x-full");
-    sidebarOverlay.classList.toggle("hidden", isOpen);
+  init() {
+    if (!this.sidebar || !this.sidebarToggle || !this.closeSidebar || !this.sidebarOverlay) {
+      console.error("One or more sidebar elements are missing.");
+      return;
+    }
+
+    this.sidebarToggle.addEventListener("click", () => this.toggleSidebar());
+    this.closeSidebar.addEventListener("click", () => this.toggleSidebar());
+    this.sidebarOverlay.addEventListener("click", () => this.toggleSidebar());
+
+    this.sidebarToggle.addEventListener("keydown", (e) => this.handleToggleKeydown(e));
+    this.closeSidebar.addEventListener("keydown", (e) => this.handleToggleKeydown(e));
+
+    if (this.logoutButton) {
+      this.logoutButton.addEventListener("click", () => this.handleLogout());
+      this.logoutButton.addEventListener("keydown", (e) => this.handleLogoutKeydown(e));
+    }
+  }
+
+  toggleSidebar() {
+    const isOpen = !this.sidebar.classList.contains("-translate-x-full");
+    this.sidebar.classList.toggle("-translate-x-full");
+    this.sidebarOverlay.classList.toggle("hidden", isOpen);
     document.body.classList.toggle("overflow-hidden", !isOpen);
 
     if (!isOpen) {
-      closeSidebar.focus();
+      this.closeSidebar.focus();
     } else {
-      sidebarToggle.focus();
+      this.sidebarToggle.focus();
     }
-  };
-
-  sidebarToggle.addEventListener("click", toggleSidebar);
-  closeSidebar.addEventListener("click", toggleSidebar);
-  sidebarOverlay.addEventListener("click", toggleSidebar);
-
-  sidebarToggle.addEventListener("keydown", (e) => {
-    if (e.key === "Enter" || e.key === " ") {
-      e.preventDefault();
-      toggleSidebar();
-    }
-  });
-
-  closeSidebar.addEventListener("keydown", (e) => {
-    if (e.key === "Enter" || e.key === " ") {
-      e.preventDefault();
-      toggleSidebar();
-    }
-  });
-
-  if (logoutButton) {
-    logoutButton.addEventListener("click", () => {
-      window.location.href = "/dashboard/logout";
-    });
-
-    logoutButton.addEventListener("keydown", (e) => {
-      if (e.key === "Enter" || e.key === " ") {
-        e.preventDefault();
-        window.location.href = "/dashboard/logout";
-      }
-    });
   }
+
+  handleToggleKeydown(e) {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      this.toggleSidebar();
+    }
+  }
+
+  handleLogout() {
+    window.location.href = "/dashboard/logout";
+  }
+
+  handleLogoutKeydown(e) {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      this.handleLogout();
+    }
+  }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  new SidebarManager();
 });

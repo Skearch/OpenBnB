@@ -70,38 +70,38 @@ class PropertyDetailsRenderer {
 
     const renderExpandableText = (id, text, maxLength) => {
       if (!text || text.length <= maxLength) {
-        return `<span style="white-space: pre-line;">${text || ""}</span>`;
+        return `<span class="break-words whitespace-pre-line">${text || ""}</span>`;
       }
       const short = text.slice(0, maxLength) + "...";
       return `
-        <span id="${id}-short" style="white-space: pre-line;">${short}</span>
-        <span id="${id}-full" style="display:none; white-space: pre-line;">${text}</span>
-        <a href="#" id="${id}-toggle" class="text-blue-500 hover:underline ml-2">Read more</a>
-      `;
+      <span id="${id}-short" class="break-words whitespace-pre-line">${short}</span>
+      <span id="${id}-full" style="display:none;" class="break-words whitespace-pre-line">${text}</span>
+      <a href="#" id="${id}-toggle" class="text-blue-500 hover:underline ml-2">Read more</a>
+    `;
     };
 
     this.container.innerHTML = `
-      <div class="flex flex-col md:flex-row gap-8 w-full items-stretch">
-        <div class="flex-1 flex flex-col h-full items-center md:items-start">
-          ${this.renderCarousel(images, property.name)}
-        </div>
-        <div class="flex-1 h-full">
-          <h2 class="fs-2 fw-bold mb-4">${property.name}</h2>
-          <p class="mb-4 text-secondary">
-            ${renderExpandableText("desc", property.description, 180)}
-          </p>
-          <p class="mb-2 fs-5 fw-semibold">
-            ${property.currencySymbol} ${Number(property.price).toLocaleString()} per ${property.checkInOutTitle}
-          </p>
-          <p class="mb-2">
-            <strong>Address:</strong>
-            ${renderExpandableText("addr", property.address, 80)}
-          </p>
-          <p class="mb-2"><strong>Check-in:</strong> ${property.checkInTime
-      } | <strong>Check-out:</strong> ${property.checkOutTime}</p>
-        </div>
+    <div class="flex flex-col md:flex-row gap-8 w-full items-stretch">
+      <div class="flex-1 flex flex-col h-full items-center md:items-start">
+        ${this.renderCarousel(images, property.name)}
       </div>
-    `;
+      <div class="flex-1 h-full">
+        <h2 class="fs-2 fw-bold mb-4">${property.name}</h2>
+        <p class="mb-4 text-secondary">
+          ${renderExpandableText("desc", property.description, 180)}
+        </p>
+        <p class="mb-2 fs-5 fw-semibold">
+          ${property.currencySymbol} ${Number(property.price).toLocaleString()} per ${property.checkInOutTitle}
+        </p>
+        <p class="mb-2">
+          <strong>Address:</strong>
+          ${renderExpandableText("addr", property.address, 80)}
+        </p>
+        <p class="mb-2"><strong>Check-in:</strong> ${property.checkInTime
+      } | <strong>Check-out:</strong> ${property.checkOutTime}</p>
+      </div>
+    </div>
+  `;
 
     this.#attachExpandableListeners();
   }
@@ -255,15 +255,42 @@ class BookingCalendar {
       const td = document.createElement("td");
       td.textContent = day;
 
+      td.className = "rounded border border-gray-200 text-center cursor-pointer transition focus:outline-none select-none py-2 px-2";
+
       if (date < this.today) {
-        td.className = "bg-gray-200 text-gray-400 cursor-not-allowed";
+        td.className += " bg-gray-200 text-gray-400 cursor-not-allowed";
+        td.tabIndex = -1;
       } else if (this.calendarData[key] === "booked") {
-        td.className = "bg-red-400 text-white";
+        td.className += " bg-red-400 text-white cursor-not-allowed";
+        td.tabIndex = -1;
       } else if (this.calendarData[key] === "pending") {
-        td.className = "bg-yellow-300";
+        td.className += " bg-yellow-300";
+        td.tabIndex = 0;
       } else {
-        td.className = "bg-white cursor-pointer hover:bg-blue-100";
+        td.tabIndex = 0;
         td.addEventListener("click", () => this.selectDate(date));
+        td.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            this.selectDate(date);
+          }
+        });
+      }
+
+      if (this.selectedStart && this.selectedEnd) {
+        if (
+          date.getTime() === this.selectedStart.getTime() ||
+          date.getTime() === this.selectedEnd.getTime()
+        ) {
+          td.className += " bg-black text-white font-bold";
+        } else if (
+          date > this.selectedStart &&
+          date < this.selectedEnd
+        ) {
+          td.className += " bg-gray-600 text-white";
+        }
+      } else if (this.selectedStart && date.getTime() === this.selectedStart.getTime()) {
+        td.className += " bg-black text-white font-bold";
       }
 
       row.appendChild(td);
@@ -288,6 +315,7 @@ class BookingCalendar {
       this.selectedEnd = null;
     }
     this.updateSummary();
+    this.renderCalendar(this.currentMonth, this.currentYear);
   }
 
   formatTime12h(timeStr) {
@@ -322,7 +350,7 @@ class BookingCalendar {
         : "-";
     const amount =
       this.selectedStart && this.selectedEnd
-        ? `$${nights * this.pricePerNight()}`
+        ? `$${(nights * this.pricePerNight()).toLocaleString()}`
         : "-";
 
     document.getElementById("summary-checkin").textContent = checkin;

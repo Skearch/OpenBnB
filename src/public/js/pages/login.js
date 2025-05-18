@@ -15,7 +15,10 @@ class AuthFormHandler {
     const email = document.getElementById("email").value.trim();
     const password = document.getElementById("password").value;
     try {
-      const response = await fetch("/api/authentication/login", {
+      const params = new URLSearchParams(window.location.search);
+      const rdirect = params.get("rdirect");
+
+      const response = await fetch("/api/authentication/login" + (rdirect ? `?rdirect=${encodeURIComponent(rdirect)}` : ""), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -23,7 +26,11 @@ class AuthFormHandler {
       const data = await response.json();
       if (response.ok) {
         localStorage.setItem("user", JSON.stringify(data.user));
-        window.location.href = "/dashboard/redirect";
+        if (data.redirect) {
+          window.location.href = data.redirect;
+        } else {
+          window.location.href = "/dashboard/redirect";
+        }
       } else {
         alert(data.message);
       }

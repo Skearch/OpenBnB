@@ -58,7 +58,8 @@
                 <div class="text-gray-900 text-xl font-semibold mb-4 text-center">
                   You must be logged in to book
                 </div>
-                <a href="/account/login" class="block w-full max-w-xs">
+                <a href="/account/login?<%= 'rdirect=' + encodeURIComponent(request.originalUrl || '/property/' + propertyId) %>"
+                  class="block w-full max-w-xs">
                   <button
                     class="bg-blue-600 text-white px-6 py-3 rounded-lg w-full text-lg font-semibold hover:bg-blue-700 transition">
                     Sign in
