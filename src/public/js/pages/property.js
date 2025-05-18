@@ -167,6 +167,7 @@ class BookingCalendar {
   async init() {
     await this.#fetchBookings();
     this.renderCalendar(this.currentMonth, this.currentYear);
+    this.updateSummary();
   }
 
   async #fetchBookings() {

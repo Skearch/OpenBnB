@@ -54,7 +54,7 @@ class Pagination {
       btn.className =
         "mx-1 px-3 py-1 rounded border " +
         (i === currentPage
-          ? "bg-black text-blue-500 border-blue-500"
+          ? "bg-black text-yellow-300 border-yellow-300"
           : "bg-black text-white");
       btn.addEventListener("click", () => this.onPageChange(i));
       this.paginationEl.appendChild(btn);
