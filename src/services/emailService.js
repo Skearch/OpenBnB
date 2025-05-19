@@ -5,25 +5,15 @@ class EmailService {
         this.transporter = nodemailer.createTransport({
             host: process.env.SMTP_HOST,
             port: process.env.SMTP_PORT,
-            secure: process.env.SMTP_SECURE === 'true', // true for 465, false for other ports
+            secure: process.env.SMTP_SECURE === 'true' || false,
             auth: {
                 user: process.env.SMTP_USER,
                 pass: process.env.SMTP_PASS,
             },
         });
-        this.from = process.env.SMTP_FROM || process.env.SMTP_USER;
+        this.from = process.env.SMTP_FROM;
     }
 
-    /**
-     * Send a booking confirmation email.
-     * @param {string} to - Recipient email address.
-     * @param {object} options - Booking details.
-     * @param {string} options.propertyName - Name of the property.
-     * @param {string|Date} options.startDate - Booking start date.
-     * @param {string|Date} options.endDate - Booking end date.
-     * @param {string} [options.guestName] - Name of the guest.
-     * @returns {Promise<void>}
-     */
     async sendBookingConfirmation(to, { propertyName, startDate, endDate, guestName }) {
         const subject = `Booking Confirmed: ${propertyName}`;
         const formattedStart = this.formatDate(startDate);
@@ -47,15 +37,6 @@ class EmailService {
         await this.sendMail({ to, subject, html });
     }
 
-    /**
-     * Send a generic email.
-     * @param {object} options
-     * @param {string} options.to
-     * @param {string} options.subject
-     * @param {string} options.html
-     * @param {string} [options.text]
-     * @returns {Promise<void>}
-     */
     async sendMail({ to, subject, html, text }) {
         const mailOptions = {
             from: this.from,
@@ -64,14 +45,14 @@ class EmailService {
             html,
             text,
         };
-        await this.transporter.sendMail(mailOptions);
+        try {
+            await this.transporter.sendMail(mailOptions);
+        } catch (err) {
+            console.error('Error sending email:', err);
+            throw err;
+        }
     }
 
-    /**
-     * Format a date as a readable string.
-     * @param {string|Date} date
-     * @returns {string}
-     */
     formatDate(date) {
         const d = new Date(date);
         return d.toLocaleDateString(undefined, {

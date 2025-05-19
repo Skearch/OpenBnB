@@ -33,26 +33,62 @@ class DashboardController {
     }
   }
 
+  static async resendVerification(req, res) {
+    if (process.env.EMAIL_VERIFICATION !== 'true') {
+      return res.status(400).json({ message: "Email verification is disabled" });
+    }
+
+    const email = req.body.email;
+    if (!email) return res.status(400).json({ message: "Email is required" });
+
+    const user = await prisma.user.findUnique({ where: { email } });
+    if (!user) return res.status(404).json({ message: "User not found" });
+    if (user.verified) return res.status(400).json({ message: "User already verified" });
+
+    const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+    await prisma.user.update({
+      where: { email },
+      data: { verificationCode },
+    });
+    await require("../services/emailService").sendMail({
+      to: email,
+      subject: "Verify your email",
+      html: `<p>Hello ${user.name},</p>
+           <p>Your verification code is: <b>${verificationCode}</b></p>
+           <p>Enter this code to verify your account.</p>`,
+    });
+
+    res.json({ message: "Verification code resent" });
+  }
+
   static async verification(req, res) {
-    if (req.user && !req.user.verified) {
-      const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
-      await prisma.user.update({
-        where: { email: req.user.email },
-        data: { verificationCode },
-      });
-      await require("../services/emailService").sendMail({
-        to: req.user.email,
-        subject: "Verify your email",
-        html: `<p>Hello ${req.user.name},</p>
-             <p>Your verification code is: <b>${verificationCode}</b></p>
-             <p>Enter this code to verify your account.</p>`,
+    if (process.env.EMAIL_VERIFICATION !== 'true') {
+      return res.redirect('/dashboard/guest');
+    }
+
+    if (req.user) {
+      const user = await prisma.user.findUnique({ where: { email: req.user.email } });
+      if (user && !user.verified) {
+        const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+        await prisma.user.update({
+          where: { email: req.user.email },
+          data: { verificationCode },
+        });
+        await require("../services/emailService").sendMail({
+          to: req.user.email,
+          subject: "Verify your email",
+          html: `<p>Hello ${user.name},</p>
+                   <p>Your verification code is: <b>${verificationCode}</b></p>
+                   <p>Enter this code to verify your account.</p>`,
+        });
+      }
+
+      res.render("dashboard/verification", {
+        email: req.user.email,
+        config: res.locals.config,
+        user: user,
       });
     }
-    res.render("dashboard/verification", {
-      email: req.user ? req.user.email : "",
-      config: res.locals.config,
-      user: req.user,
-    });
   }
 
   static overview(req, res) {
@@ -109,4 +145,5 @@ module.exports = {
   propertiesEdit: DashboardController.propertiesEdit,
   guest: DashboardController.guest,
   verification: DashboardController.verification,
+  resendVerification: DashboardController.resendVerification,
 };

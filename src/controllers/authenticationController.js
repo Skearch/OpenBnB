@@ -63,6 +63,9 @@ class AuthenticationController {
   static verify = [
     validateInput(verifySchema),
     async (req, res) => {
+      if (process.env.EMAIL_VERIFICATION !== 'true') {
+        return res.status(400).json({ message: "Email verification is disabled" });
+      }
       const { email, code } = req.body;
       try {
         const user = await prisma.user.findUnique({ where: { email } });
@@ -161,10 +164,6 @@ class AuthenticationController {
 
   static #generateToken(payload, secret, expiresIn) {
     return jwt.sign(payload, secret, { expiresIn });
-  }
-
-  static #generateVerificationCode() {
-    return Math.floor(100000 + Math.random() * 900000).toString();
   }
 }
 

@@ -338,6 +338,10 @@ class BookingCalendar {
     return parseFloat(this.container?.dataset.price || 0);
   }
 
+  currencySymbol() {
+    return this.container?.dataset.currencySymbol;
+  }
+
   updateSummary() {
     const checkin = this.selectedStart
       ? `${this.selectedStart.toDateString()} ${this.formatTime12h(this.propertyCheckInTime())}`
@@ -351,7 +355,7 @@ class BookingCalendar {
         : "-";
     const amount =
       this.selectedStart && this.selectedEnd
-        ? `$${(nights * this.pricePerNight()).toLocaleString()}`
+        ? `${this.currencySymbol()} ${(nights * this.pricePerNight()).toLocaleString()}`
         : "-";
 
     document.getElementById("summary-checkin").textContent = checkin;

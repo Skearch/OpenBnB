@@ -26,9 +26,7 @@ class FileHelper {
         try {
           await fs.promises.unlink(filePath);
         } catch (err) {
-          if (err.code !== "ENOENT") {
-            console.error("Failed to delete image:", filePath, err);
-          }
+
         }
       })
     );
@@ -299,7 +297,7 @@ class PropertyController {
         (img) => !newImages.includes(img)
       );
 
-      FileHelper.deleteFiles(imagesToDelete);
+      await FileHelper.deleteFiles(imagesToDelete);
 
       const property = await prisma.property.update({
         where: { id: parseInt(id) },
