@@ -36,6 +36,13 @@ app.use((req, res, next) => {
   });
 });
 
+const fs = require("fs");
+const uploadsDir = path.join(__dirname, "public", "uploads");
+
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
 async function createStartupAdmin() {
   try {
     const { ADMIN_EMAIL, ADMIN_PASSWORD, ADMIN_NAME } = process.env;
