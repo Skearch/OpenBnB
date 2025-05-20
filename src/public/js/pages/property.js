@@ -373,6 +373,7 @@ class BookingCalendar {
     }
   }
 }
+let bookingCalendar = null;
 
 document.addEventListener("DOMContentLoaded", () => {
   const container = document.getElementById("property-details");
@@ -384,5 +385,29 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (!calendarContainer || !propertyId) return;
 
-  new BookingCalendar(calendarContainer, summaryContainer, propertyId, container);
+  bookingCalendar = new BookingCalendar(calendarContainer, summaryContainer, propertyId, container);
+
+  const bookNowBtn = document.getElementById("book-now");
+  if (bookNowBtn) {
+    bookNowBtn.addEventListener("click", async () => {
+      const calendar = bookingCalendar; // Use the stored instance
+      if (!calendar.selectedStart || !calendar.selectedEnd) return;
+
+      const res = await fetch("/api/booking/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          propertyId: calendar.propertyId,
+          startDate: calendar.selectedStart.toISOString().slice(0, 10),
+          endDate: calendar.selectedEnd.toISOString().slice(0, 10),
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        alert("Booking request sent! Please check your email.");
+      } else {
+        alert(data.message || "Booking failed.");
+      }
+    });
+  }
 });

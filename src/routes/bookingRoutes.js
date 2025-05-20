@@ -1,9 +1,10 @@
 const express = require("express");
 const router = express.Router();
-const { list } = require("../controllers/bookingController");
+const { list, createBooking } = require("../controllers/bookingController");
+const authenticationMiddleware = require("../middleware/authenticationMiddleware");
 
-router.get("/list/:propertyId", (req, res) => {
-  res.json({ bookings: [] });
-});
+router.get("/list/:propertyId", list);
+
+router.post("/create", authenticationMiddleware("guest"), createBooking);
 
 module.exports = router;

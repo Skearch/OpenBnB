@@ -18,18 +18,23 @@
         <div id="property-details" data-property-id="<%= propertyId %>" data-check-in-time="<%= property.checkInTime %>"
           data-check-out-time="<%= property.checkOutTime %>" data-price="<%= property.price %>"
           data-currency-symbol="<%= property.currencySymbol %>"
-          class="bg-white shadow rounded-lg p-8 flex flex-col md:flex-row gap-8 mb-10 min-h-[400px] items-stretch">
-          <div class="flex-1 flex flex-col h-full justify-start"></div>
-          <div class="flex-1 flex flex-col h-full"></div>
+          class="rounded-lg p-8 flex flex-col gap-6 mb-10 min-h-[400px] items-stretch">
+
+          <h2 id="property-title" class="text-2xl font-bold mb-2"></h2>
+          <div id="property-carousel-row" class="mb-2"></div>
+          <p id="property-price" class="mb-2 text-lg font-semibold"></p>
+          <p id="property-description" class="mb-2 text-secondary"></p>
+          <p id="property-address" class="mb-2"></p>
+          <p id="property-checkinout" class="mb-2"></p>
         </div>
-        <div class="max-w-4xl mx-auto bg-white shadow rounded-lg p-8 flex flex-col md:flex-row gap-8">
+        <div class="max-w-4xl mx-auto bg-white shadow-sm rounded-lg p-8 flex flex-col md:flex-row gap-8">
           <% if (user) { %>
             <div class="w-full md:w-1/2 flex justify-center">
               <div id="booking-calendar-container" class="w-full max-w-xs"></div>
             </div>
             <div class="w-full md:w-1/2 flex justify-center">
               <div id="booking-summary" class="w-full max-w-xs">
-                <div id="booking-summary-static" class="space-y-4 bg-gray-50 rounded-lg p-4 shadow-inner">
+                <div id="booking-summary-static" class="space-y-4 p-4">
                   <div class="text-gray-900 text-base md:text-lg">
                     <span class="font-semibold">Check-in:</span>
                     <b id="summary-checkin" class="font-normal text-gray-700">-</b>
