@@ -38,6 +38,9 @@ class AccountController {
         if (await AccountController.#userExists(email)) {
           return res.status(400).json({ message: "Email is already in use" });
         }
+        if (!password) {
+          return res.status(400).json({ message: "Password is required" });
+        }
         const hashedPassword = await AccountController.#hashPassword(password);
         const account = await prisma.user.create({
           data: { name, email, password: hashedPassword, role },

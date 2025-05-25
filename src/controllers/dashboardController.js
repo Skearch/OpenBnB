@@ -123,6 +123,7 @@ class DashboardController {
       if (!property) {
         return res.status(404).send("Property not found");
       }
+
       const propertyWithImages = PropertyController.toImageUrls(property);
       res.render("dashboard/property/propertiesEdit", {
         property: propertyWithImages,
@@ -133,6 +134,10 @@ class DashboardController {
       console.error("Error in propertiesEdit:", error);
       res.status(500).send("Server error");
     }
+  }
+
+  static bookings(req, res) {
+    res.render("dashboard/booking/bookings");
   }
 }
 
@@ -146,4 +151,5 @@ module.exports = {
   guest: DashboardController.guest,
   verification: DashboardController.verification,
   resendVerification: DashboardController.resendVerification,
+  bookings: DashboardController.bookings,
 };

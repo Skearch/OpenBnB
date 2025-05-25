@@ -17,9 +17,9 @@ class PropertyImageEditor {
   }
 
   clearFeaturedBorders() {
-    this.imagePreviewContainer.querySelectorAll("img").forEach((img) => {
-      img.classList.remove("border-4", "border-blue-500");
-    });
+    this.imagePreviewContainer
+      .querySelectorAll("img")
+      .forEach((img) => img.classList.remove("border-4", "border-blue-500"));
     this.imagePreviewContainer
       .querySelectorAll(".featured-label")
       .forEach((label) => label.remove());
@@ -52,6 +52,26 @@ class PropertyImageEditor {
     img.classList.add("w-full", "h-full", "object-cover");
     imageWrapper.appendChild(img);
 
+    const menu = this.createMenu(imageFile, imageWrapper);
+    imageWrapper.appendChild(menu);
+
+    const menuToggle = this.createMenuToggle(menu);
+    imageWrapper.appendChild(menuToggle);
+
+    if (isFeatured) {
+      img.classList.add("border-4", "border-blue-500");
+      this.featuredImage = imageFile;
+      const label = document.createElement("span");
+      label.className =
+        "absolute bottom-2 left-2 bg-blue-500 text-white text-xs px-2 py-1 rounded featured-label";
+      label.textContent = "Featured";
+      imageWrapper.appendChild(label);
+    }
+
+    this.imagePreviewContainer.appendChild(imageWrapper);
+  }
+
+  createMenu(imageFile, imageWrapper) {
     const menu = document.createElement("div");
     menu.classList.add(
       "absolute",
@@ -67,8 +87,21 @@ class PropertyImageEditor {
       <button type="button" class="block w-full rounded-lg text-center px-2 py-1 text-sm text-red-500 hover:bg-gray-100" data-action="delete">Delete</button>
       <button type="button" class="block w-full rounded-lg text-center px-2 py-1 text-sm text-blue-500 hover:bg-gray-100" data-action="feature">Featured</button>
     `;
-    imageWrapper.appendChild(menu);
 
+    menu.addEventListener("click", (e) => {
+      const action = e.target.dataset.action;
+      if (action === "delete") {
+        this.deleteImage(imageFile, imageWrapper);
+      } else if (action === "feature") {
+        this.setFeaturedImage(imageFile);
+      }
+      menu.classList.add("hidden");
+    });
+
+    return menu;
+  }
+
+  createMenuToggle(menu) {
     const menuToggle = document.createElement("button");
     menuToggle.type = "button";
     menuToggle.classList.add(
@@ -87,46 +120,32 @@ class PropertyImageEditor {
       e.stopPropagation();
       menu.classList.toggle("hidden");
     });
-    imageWrapper.appendChild(menuToggle);
+    return menuToggle;
+  }
 
-    if (isFeatured) {
-      img.classList.add("border-4", "border-blue-500");
-      this.featuredImage = imageFile;
-      const label = document.createElement("span");
-      label.className =
-        "absolute bottom-2 left-2 bg-blue-500 text-white text-xs px-2 py-1 rounded featured-label";
-      label.textContent = "Featured";
-      imageWrapper.appendChild(label);
+  deleteImage(imageFile, imageWrapper) {
+    this.uploadedImages = this.uploadedImages.filter(
+      (imgObj) => imgObj !== imageFile
+    );
+    imageWrapper.remove();
+    if (this.featuredImage === imageFile) {
+      this.featuredImage = null;
+      this.clearFeaturedBorders();
     }
+  }
 
-    menu.addEventListener("click", (e) => {
-      const action = e.target.dataset.action;
-      if (action === "delete") {
-        this.uploadedImages = this.uploadedImages.filter(
-          (imgObj) => imgObj !== imageFile
-        );
-        imageWrapper.remove();
-        if (this.featuredImage === imageFile) {
-          this.featuredImage = null;
-          this.clearFeaturedBorders();
-        }
-      } else if (action === "feature") {
-        this.uploadedImages = this.uploadedImages.filter(
-          (imgObj) => imgObj !== imageFile
-        );
-        this.uploadedImages.unshift(imageFile);
-        this.featuredImage = imageFile;
-        if (this.imagePreviewContainer) {
-          this.imagePreviewContainer.innerHTML = "";
-          this.uploadedImages.forEach((imgObj, idx) =>
-            this.createImagePreview(imgObj, idx === 0)
-          );
-        }
-      }
-      menu.classList.add("hidden");
-    });
-
-    this.imagePreviewContainer.appendChild(imageWrapper);
+  setFeaturedImage(imageFile) {
+    this.uploadedImages = this.uploadedImages.filter(
+      (imgObj) => imgObj !== imageFile
+    );
+    this.uploadedImages.unshift(imageFile);
+    this.featuredImage = imageFile;
+    if (this.imagePreviewContainer) {
+      this.imagePreviewContainer.innerHTML = "";
+      this.uploadedImages.forEach((imgObj, idx) =>
+        this.createImagePreview(imgObj, idx === 0)
+      );
+    }
   }
 
   handleImageChange(e) {
@@ -235,11 +254,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const imagePreviewContainer = document.getElementById("image-preview");
   const imagesInput = document.getElementById("images");
   const editPropertyForm = document.getElementById("editPropertyForm");
-  const imageEditor = new PropertyImageEditor(
-    imagePreviewContainer,
-    imagesInput
-  );
   if (editPropertyForm) {
+    const imageEditor = new PropertyImageEditor(
+      imagePreviewContainer,
+      imagesInput
+    );
     imageEditor.uploadedImages = [];
     imageEditor.featuredImage = null;
     if (imagePreviewContainer) imagePreviewContainer.innerHTML = "";

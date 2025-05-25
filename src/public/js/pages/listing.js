@@ -19,12 +19,13 @@ class ListingsRenderer {
           ? property.featuredImage
           : "https://placehold.co/300x200"
         }"
-              alt="${property.name
-        }" class="w-full h-48 object-cover rounded-md" />
+              alt="${property.name || "Property"}"
+              class="w-full h-48 object-cover rounded-md" />
             <div class="p-4">
-              <h4 class="text-lg font-semibold">${property.name}</h4>
-              <p class="text-gray-600">${property.currencySymbol
-        } ${formattedPrice} per ${property.checkInOutTitle}</p>
+              <h4 class="text-lg font-semibold">${property.name || "Untitled"}</h4>
+              <p class="text-gray-600">
+                ${(property.currencySymbol || "$")} ${formattedPrice} per ${property.checkInOutTitle || "stay"}
+              </p>
             </div>
           </div>
         </a>
@@ -83,7 +84,7 @@ class ListingsPage {
       );
       const data = await response.json();
 
-      if (!data.success || data.properties.length === 0) {
+      if (!data.success || !Array.isArray(data.properties) || data.properties.length === 0) {
         this.renderer.renderError("No Listings Available");
         return;
       }

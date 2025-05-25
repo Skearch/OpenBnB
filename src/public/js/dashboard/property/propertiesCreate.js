@@ -38,7 +38,7 @@ class PropertyImageManager {
 
     const img = document.createElement("img");
     img.src = imageFile.isExisting
-      ? `data:image/jpeg;base64,${imageFile.data}`
+      ? imageFile.data
       : URL.createObjectURL(imageFile.data);
     img.classList.add("w-full", "h-full", "object-cover");
     imageWrapper.appendChild(img);
@@ -134,16 +134,6 @@ class PropertyImageManager {
     this.imagesInput.value = "";
   }
 
-  base64ToBlob(base64, mime = "image/jpeg") {
-    const byteChars = atob(base64);
-    const byteNumbers = new Array(byteChars.length);
-    for (let i = 0; i < byteChars.length; i++) {
-      byteNumbers[i] = byteChars.charCodeAt(i);
-    }
-    const byteArray = new Uint8Array(byteNumbers);
-    return new Blob([byteArray], { type: mime });
-  }
-
   getFormData(form) {
     if (this.uploadedImages.length < 2) {
       alert("You must upload at least 2 images.");
@@ -154,22 +144,19 @@ class PropertyImageManager {
       return null;
     }
     const formData = new FormData(form);
-    let featuredFile;
     if (this.featuredImage.isExisting) {
-      featuredFile = this.base64ToBlob(this.featuredImage.data);
+      formData.append("featuredImage", this.featuredImage.data);
     } else {
-      featuredFile = this.featuredImage.data;
+      formData.append("featuredImage", this.featuredImage.data);
     }
-    formData.append("featuredImage", featuredFile);
+
     this.uploadedImages.forEach((img) => {
       if (img !== this.featuredImage) {
-        let file;
         if (img.isExisting) {
-          file = this.base64ToBlob(img.data);
+          formData.append("images", img.data);
         } else {
-          file = img.data;
+          formData.append("images", img.data);
         }
-        formData.append("images", file);
       }
     });
     return formData;

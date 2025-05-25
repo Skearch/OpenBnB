@@ -9,37 +9,35 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   let selectedAccounts = [];
 
-  if (accountList) {
+  async function loadAccounts() {
+    if (!accountList) return;
+    accountList.innerHTML = "";
     try {
       const response = await fetch("/api/account/listall");
       const accounts = await response.json();
 
       accounts.forEach((account) => {
         const row = `
-                    <tr>
-                        <td>
-                            <input type="checkbox" class="account-checkbox" data-id="${account.id}" />
-                        </td>
-                        <td>${account.name}</td>
-                        <td>${account.email}</td>
-                        <td>${account.role}</td>
-                    </tr>
-                `;
+          <tr>
+            <td>
+              <input type="checkbox" class="account-checkbox" data-id="${account.id}" />
+            </td>
+            <td>${account.name}</td>
+            <td>${account.email}</td>
+            <td>${account.role}</td>
+          </tr>
+        `;
         accountList.innerHTML += row;
       });
 
       document.querySelectorAll(".account-checkbox").forEach((checkbox) => {
         checkbox.addEventListener("change", (e) => {
           const accountId = e.target.dataset.id;
-
           if (e.target.checked) {
             selectedAccounts.push(accountId);
           } else {
-            selectedAccounts = selectedAccounts.filter(
-              (id) => id !== accountId
-            );
+            selectedAccounts = selectedAccounts.filter((id) => id !== accountId);
           }
-
           updateButtonStates();
         });
       });
@@ -69,7 +67,6 @@ document.addEventListener("DOMContentLoaded", async () => {
           const response = await fetch(`/api/account/listall`);
           const accounts = await response.json();
           const account = accounts.find((a) => a.id === parseInt(accountId));
-
           if (account) {
             document.getElementById("editAccountId").value = account.id;
             document.getElementById("editName").value = account.name;
@@ -107,17 +104,14 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (editAccountForm) {
     editAccountForm.addEventListener("submit", async (e) => {
       e.preventDefault();
-
       const formData = new FormData(editAccountForm);
       const accountId = formData.get("id");
-
       try {
         const response = await fetch(`/api/account/update/${accountId}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(Object.fromEntries(formData)),
         });
-
         if (response.ok) {
           alert("Account updated successfully");
           location.reload();
@@ -134,16 +128,13 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (addAccountForm) {
     addAccountForm.addEventListener("submit", async (e) => {
       e.preventDefault();
-
       const formData = new FormData(addAccountForm);
-
       try {
         const response = await fetch("/api/account/create", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(Object.fromEntries(formData)),
         });
-
         if (response.ok) {
           alert("Account created successfully");
           location.reload();
@@ -162,4 +153,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       editAccountModal.classList.add("hidden");
     });
   }
+
+  await loadAccounts();
 });

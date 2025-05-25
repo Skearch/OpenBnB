@@ -40,6 +40,10 @@ class VerificationHandler {
         const code = this.codeInput.value.trim();
         const email = this.emailInput.value.trim();
         this.hideError();
+        if (!code || !email) {
+            this.showError('Please enter both email and code.');
+            return;
+        }
         try {
             const response = await fetch('/api/authentication/verify', {
                 method: 'POST',
@@ -61,6 +65,10 @@ class VerificationHandler {
         e.preventDefault();
         const email = this.emailInput.value.trim();
         this.hideError();
+        if (!email) {
+            this.showError('Please enter your email.');
+            return;
+        }
         try {
             const response = await fetch('/api/authentication/resend-verification', {
                 method: 'POST',

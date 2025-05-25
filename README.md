@@ -88,12 +88,12 @@ EMAIL_VERIFICATION=true
 
 5. Run database migrations:
 ```bash
-npx prisma migrate dev --schema=src/models/schema.prisma
+npx prisma migrate deploy --schema=src/models/schema.prisma
 ```
 
 6. Start the server:
 ```bash
-npm run dev
+npm start
 ```
 
 ## Usage

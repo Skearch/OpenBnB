@@ -4,7 +4,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Property Details - <%= config.Business.Name %>
+  <title>
+    <%= property?.name || 'Property' %> - <%= config.Business.Name %>
   </title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
@@ -13,70 +14,73 @@
 
 <body class="font-sans bg-gray-50 min-h-screen flex flex-col">
   <%- include('../partials/navbar') %>
-    <main class="flex-1 py-16 px-4">
-      <section class="max-w-4xl mx-auto">
+    <main class="flex-1 py-8 px-2 md:px-8">
+      <section class="max-w-6xl mx-auto">
         <div id="property-details" data-property-id="<%= propertyId %>" data-check-in-time="<%= property.checkInTime %>"
           data-check-out-time="<%= property.checkOutTime %>" data-price="<%= property.price %>"
-          data-currency-symbol="<%= property.currencySymbol %>"
-          class="rounded-lg p-8 flex flex-col gap-6 mb-10 min-h-[400px] items-stretch">
-
-          <h2 id="property-title" class="text-2xl font-bold mb-2"></h2>
-          <div id="property-carousel-row" class="mb-2"></div>
-          <p id="property-price" class="mb-2 text-lg font-semibold"></p>
-          <p id="property-description" class="mb-2 text-secondary"></p>
-          <p id="property-address" class="mb-2"></p>
-          <p id="property-checkinout" class="mb-2"></p>
+          data-currency-symbol="<%= property.currencySymbol %>">
+          <div id="property-gallery-card" class="bg-white rounded-2xl shadow-lg overflow-hidden mb-6"></div>
+          <div id="property-info-card" class="bg-white rounded-2xl shadow-lg p-6 md:p-8 mb-8"></div>
         </div>
-        <div class="max-w-4xl mx-auto bg-white shadow-sm rounded-lg p-8 flex flex-col md:flex-row gap-8">
-          <% if (user) { %>
-            <div class="w-full md:w-1/2 flex justify-center">
-              <div id="booking-calendar-container" class="w-full max-w-xs"></div>
+        <% if (user) { %>
+          <div class="flex flex-col md:flex-row gap-8">
+            <div class="w-full md:w-2/3">
+              <div id="booking-calendar-container" class="bg-white rounded-2xl shadow-lg p-6 mb-6"></div>
             </div>
-            <div class="w-full md:w-1/2 flex justify-center">
-              <div id="booking-summary" class="w-full max-w-xs">
-                <div id="booking-summary-static" class="space-y-4 p-4">
-                  <div class="text-gray-900 text-base md:text-lg">
-                    <span class="font-semibold">Check-in:</span>
+            <div class="w-full md:w-1/3">
+              <div id="booking-summary" class="sticky top-24 bg-white rounded-xl shadow-md p-6">
+                <div id="booking-summary-static" class="space-y-4">
+                  <div class="flex justify-between text-base">
+                    <span class="font-semibold">Check-in</span>
                     <b id="summary-checkin" class="font-normal text-gray-700">-</b>
                   </div>
-                  <div class="text-gray-900 text-base md:text-lg">
-                    <span class="font-semibold">Check-out:</span>
+                  <div class="flex justify-between text-base">
+                    <span class="font-semibold">Check-out</span>
                     <b id="summary-checkout" class="font-normal text-gray-700">-</b>
                   </div>
-                  <div class="text-gray-900 text-base md:text-lg">
-                    <span class="font-semibold">Total night(s):</span>
+                  <div class="flex justify-between text-base">
+                    <span class="font-semibold">Nights</span>
                     <b id="summary-nights" class="font-normal text-gray-700">-</b>
                   </div>
-                  <div class="text-gray-900 text-base md:text-lg">
-                    <span class="font-semibold">Total amount:</span>
+                  <div class="flex justify-between text-base">
+                    <span class="font-semibold">Total</span>
                     <b id="summary-amount" class="font-normal text-gray-700">-</b>
                   </div>
                   <button id="book-now"
-                    class="custom-call-to-action bg-green-600 text-black px-6 py-3 w-full rounded-lg font-semibold text-lg transition disabled:opacity-50 disabled:cursor-not-allowed hover:bg-green-700"
+                    class="bg-gradient-to-r from-pink-500 to-red-400 text-white px-6 py-3 w-full rounded-lg font-semibold text-lg transition disabled:opacity-50 disabled:cursor-not-allowed hover:from-pink-600 hover:to-red-500"
                     disabled>
-                    Book Now
+                    Reserve
                   </button>
                 </div>
               </div>
             </div>
-            <% } else { %>
-              <div class="w-full flex flex-col items-center justify-center min-h-[200px]">
-                <div class="text-gray-900 text-xl font-semibold mb-4 text-center">
-                  You must be logged in to book
-                </div>
-                <a href="/account/login?<%= 'rdirect=' + encodeURIComponent(request.originalUrl || '/property/' + propertyId) %>"
-                  class="block w-full max-w-xs">
-                  <button
-                    class="bg-blue-600 text-white px-6 py-3 rounded-lg w-full text-lg font-semibold hover:bg-blue-700 transition">
-                    Sign in
-                  </button>
-                </a>
+          </div>
+          <% } else { %>
+            <div class="w-full flex flex-col items-center justify-center min-h-[200px]">
+              <div class="text-gray-900 text-xl font-semibold mb-4 text-center">
+                You must be logged in to book
               </div>
-              <% } %>
-        </div>
+              <a href="/account/login?<%= 'rdirect=' + encodeURIComponent(request.originalUrl || '/property/' + propertyId) %>"
+                class="block w-full max-w-xs">
+                <button
+                  class="bg-blue-600 text-white px-6 py-3 rounded-lg w-full text-lg font-semibold hover:bg-blue-700 transition">
+                  Sign in
+                </button>
+              </a>
+            </div>
+            <% } %>
       </section>
     </main>
     <%- include('../partials/footer') %>
+      <script>
+        window.__PROPERTY_DATA__ = {
+          propertyId: "<%= propertyId %>",
+          checkInTime: "<%= property.checkInTime %>",
+          checkOutTime: "<%= property.checkOutTime %>",
+          price: "<%= property.price %>",
+          currencySymbol: "<%= property.currencySymbol %>"
+        };
+      </script>
       <script src="../js/pages/property.js"></script>
       <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>

@@ -3,7 +3,6 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const Joi = require("joi");
 const validateInput = require("../middleware/validateInput");
-const emailService = require("../services/emailService");
 
 const registerSchema = Joi.object({
   email: Joi.string().email().required(),
@@ -22,6 +21,8 @@ const verifySchema = Joi.object({
 });
 
 class AuthenticationController {
+  static #TOKEN_COOKIE_OPTIONS = { httpOnly: true, sameSite: "strict" };
+
   static logout = async (req, res) => {
     try {
       res.clearCookie("token");
@@ -52,7 +53,10 @@ class AuthenticationController {
             verificationCode: null,
           },
         });
-        res.status(201).json({ message: "User registered. Please log in to verify your email.", userId: user.id });
+        res.status(201).json({
+          message: "User registered. Please log in to verify your email.",
+          userId: user.id,
+        });
       } catch (error) {
         console.error("Error during registration:", error);
         res.status(500).json({ message: "Server error" });
@@ -63,7 +67,7 @@ class AuthenticationController {
   static verify = [
     validateInput(verifySchema),
     async (req, res) => {
-      if (process.env.EMAIL_VERIFICATION !== 'true') {
+      if (process.env.EMAIL_VERIFICATION !== "true") {
         return res.status(400).json({ message: "Email verification is disabled" });
       }
       const { email, code } = req.body;
@@ -103,12 +107,7 @@ class AuthenticationController {
           return res.status(400).json({ message: "Invalid credentials" });
         }
 
-        const tokenPayload = {
-          id: user.id,
-          role: user.role,
-          name: user.name,
-          email: user.email,
-        };
+        const tokenPayload = AuthenticationController.#buildTokenPayload(user);
         const token = AuthenticationController.#generateToken(
           tokenPayload,
           process.env.JWT_SECRET,
@@ -120,11 +119,8 @@ class AuthenticationController {
           "7d"
         );
 
-        res.cookie("token", token, { httpOnly: true, sameSite: "strict" });
-        res.cookie("refreshToken", refreshToken, {
-          httpOnly: true,
-          sameSite: "strict",
-        });
+        res.cookie("token", token, AuthenticationController.#TOKEN_COOKIE_OPTIONS);
+        res.cookie("refreshToken", refreshToken, AuthenticationController.#TOKEN_COOKIE_OPTIONS);
 
         const rdirect = req.query.rdirect;
         if (
@@ -164,6 +160,15 @@ class AuthenticationController {
 
   static #generateToken(payload, secret, expiresIn) {
     return jwt.sign(payload, secret, { expiresIn });
+  }
+
+  static #buildTokenPayload(user) {
+    return {
+      id: user.id,
+      role: user.role,
+      name: user.name,
+      email: user.email,
+    };
   }
 }
 

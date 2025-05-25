@@ -53,12 +53,15 @@ class PropertyTableManager {
         .then((response) => response.json())
         .then((data) => {
           if (data.success) {
+            alert("Property deleted successfully.");
             window.location.reload();
           } else {
             alert(data.message || "An error occurred.");
           }
         })
-        .catch(() => {});
+        .catch(() => {
+          alert("An error occurred while deleting the property.");
+        });
     }
   }
 
@@ -101,8 +104,7 @@ class PropertyTableManager {
           row.innerHTML = `
             <td class="border border-gray-300 px-2 py-1">${property.name}</td>
             <td class="border border-gray-300 px-2 py-1">${property.price}</td>
-            <td class="border border-gray-300 px-2 py-1">${
-              property.showcase ? "Yes" : "No"
+            <td class="border border-gray-300 px-2 py-1">${property.showcase ? "Yes" : "No"
             }</td>
           `;
           this.propertyList.appendChild(row);
@@ -110,6 +112,11 @@ class PropertyTableManager {
       } else {
         alert("Failed to fetch properties.");
       }
+
+      this.selectedPropertyId = null;
+      if (this.editButton) this.editButton.disabled = true;
+      if (this.deleteButton) this.deleteButton.disabled = true;
+      if (this.cloneButton) this.cloneButton.disabled = true;
     } catch {
       alert("An error occurred while fetching properties.");
     }

@@ -9,6 +9,7 @@ const {
   propertiesEdit,
   guest,
   verification,
+  bookings,
 } = require("../controllers/dashboardController");
 const { logout } = require("../controllers/authenticationController");
 
@@ -36,6 +37,12 @@ dashboardRoutes.get(
   propertiesEdit
 );
 
-dashboardRoutes.get("/guest", authenticationMiddleware("guest"), guest);
+dashboardRoutes.get(
+  "/properties",
+  authenticationMiddleware("owner"),
+  properties
+);
+
+dashboardRoutes.get("/bookings", authenticationMiddleware("owner"), bookings);
 
 module.exports = dashboardRoutes;
