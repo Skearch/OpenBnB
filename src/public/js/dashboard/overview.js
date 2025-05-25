@@ -22,6 +22,17 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch {
       if (usersRegisteredEl) usersRegisteredEl.textContent = "N/A";
     }
+
+    try {
+      const res = await fetch("/api/booking/active/list");
+      const data = await res.json();
+      const activeReservationsEl = document.getElementById("active-reservations");
+      const count = data.success && Array.isArray(data.bookings) ? data.bookings.length : 0;
+      if (activeReservationsEl) activeReservationsEl.textContent = count;
+    } catch {
+      const activeReservationsEl = document.getElementById("active-reservations");
+      if (activeReservationsEl) activeReservationsEl.textContent = "N/A";
+    }
   }
 
   fetchAndDisplayStats();

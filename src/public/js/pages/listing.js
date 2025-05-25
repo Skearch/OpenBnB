@@ -13,23 +13,23 @@ class ListingsRenderer {
         })
         : "0";
       const propertyCard = `
-        <a href="/property/${property.id}" class="block">
-          <div class="bg-white shadow rounded-lg overflow-hidden h-100 w-80 p-4 transition-shadow duration-700 hover:shadow-2xl">
-              <img src="${property.featuredImage
+      <a href="/property/${property.id}" class="block">
+        <div class="bg-white shadow rounded-lg overflow-hidden h-100 w-80 p-4 transition-shadow duration-700 hover:shadow-2xl custom-border-gold">
+            <img src="${property.featuredImage
           ? property.featuredImage
           : "https://placehold.co/300x200"
         }"
-              alt="${property.name || "Property"}"
-              class="w-full h-48 object-cover rounded-md" />
-            <div class="p-4">
-              <h4 class="text-lg font-semibold">${property.name || "Untitled"}</h4>
-              <p class="text-gray-600">
-                ${(property.currencySymbol || "$")} ${formattedPrice} per ${property.checkInOutTitle || "stay"}
-              </p>
-            </div>
+            alt="${property.name || "Property"}"
+            class="w-full h-48 object-cover rounded-md" />
+          <div class="p-4">
+            <h4 class="text-lg font-semibold">${property.name || "Untitled"}</h4>
+            <p class="text-gray-600">
+              ${(property.currencySymbol || "$")} ${formattedPrice} per ${property.checkInOutTitle || "stay"}
+            </p>
           </div>
-        </a>
-      `;
+        </div>
+      </a>
+    `;
       this.containerEl.insertAdjacentHTML("beforeend", propertyCard);
     });
   }
@@ -53,10 +53,10 @@ class Pagination {
       btn.textContent = i;
       btn.disabled = i === currentPage;
       btn.className =
-        "mx-1 px-3 py-1 rounded border " +
+        "custom-border x-1 px-3 py-1 rounded border " +
         (i === currentPage
-          ? "bg-black text-yellow-300 border-yellow-300"
-          : "bg-black text-white");
+          ? "bg-white text-white"
+          : "bg-white text-white");
       btn.addEventListener("click", () => this.onPageChange(i));
       this.paginationEl.appendChild(btn);
     }

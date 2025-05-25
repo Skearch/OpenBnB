@@ -13,7 +13,7 @@
 
 <body class="font-sans bg-gray-50 min-h-screen flex flex-col">
   <%- include('../partials/navbar') %>
-    <main class="flex-1">
+    <main class="flex-1" id="home">
       <section class="bg-custom text-white py-32 px-8 text-center">
         <h2 class="text-4xl font-bold mb-6">
           <%= config.Website.Hero.Title %>
@@ -77,6 +77,11 @@
     </main>
     <%- include('../partials/footer') %>
       <script src="../js/pages/index.js"></script>
+      <script>
+        window.__USER__ = JSON.parse(atob("<%= Buffer.from(JSON.stringify(user || {})).toString('base64') %>"));
+        window.__CHAINDESK_AGENT_ID__ = "<%= chaindesk_agent_id %>";
+      </script>
+      <script src="../js/chatbot.js"></script>
 </body>
 
 </html>

@@ -218,7 +218,7 @@ class BookingCalendar {
         }
       });
     } catch {
-      
+
     }
   }
 

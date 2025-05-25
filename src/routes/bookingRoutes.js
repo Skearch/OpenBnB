@@ -1,14 +1,28 @@
 const express = require("express");
 const router = express.Router();
-const { list, listAll, createBooking, deleteBooking, editBooking } = require("../controllers/bookingController");
+const {
+    list,
+    listAll,
+    createBooking,
+    deleteBooking,
+    editBooking,
+    listGuestBookings,
+    cancelBooking,
+    listActiveReservations
+} = require("../controllers/bookingController");
 const authenticationMiddleware = require("../middleware/authenticationMiddleware");
 
 router.get("/list/:propertyId", list);
-router.get("/listall", authenticationMiddleware("owner"), listAll);
 router.post("/create", authenticationMiddleware("guest"), createBooking);
+
+router.get("/listall", authenticationMiddleware("owner"), listAll);
+
+router.get("/guest/list", authenticationMiddleware("guest"), listGuestBookings);
+router.delete("/guest/cancel/:id", authenticationMiddleware("guest"), cancelBooking);
 
 router.delete("/delete/:id", authenticationMiddleware("owner"), deleteBooking);
 router.put("/edit/:id", authenticationMiddleware("owner"), editBooking);
 
-module.exports = router;
+router.get("/active/list", authenticationMiddleware("owner"), listActiveReservations);
+
 module.exports = router;

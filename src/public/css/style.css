@@ -1,5 +1,6 @@
 html,
 body {
+    scroll-behavior: smooth;
     height: 100%;
     margin: 0;
     display: flex;
@@ -73,4 +74,9 @@ main {
 .custom-call-to-action:hover {
     background-color: #ffd999;
     color: #000;
+}
+
+.custom-border {
+    border: 2px solid #78685c;
+    color: #78685c;
 }

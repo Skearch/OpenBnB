@@ -7,9 +7,9 @@ const {
   properties,
   propertiesCreate,
   propertiesEdit,
-  guest,
   verification,
   bookings,
+  mybookings,
 } = require("../controllers/dashboardController");
 const { logout } = require("../controllers/authenticationController");
 
@@ -20,6 +20,8 @@ dashboardRoutes.get("/logout", logout);
 dashboardRoutes.get("/verification", authenticationMiddleware("guest"), verification);
 dashboardRoutes.get("/accounts", authenticationMiddleware("owner"), accounts);
 dashboardRoutes.get("/overview", authenticationMiddleware("owner"), overview);
+
+dashboardRoutes.get("/mybooking", authenticationMiddleware("guest"), mybookings);
 
 dashboardRoutes.get(
   "/properties",

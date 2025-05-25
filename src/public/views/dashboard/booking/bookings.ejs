@@ -22,18 +22,21 @@
                             Manage Bookings
                         </h1>
                         <div class="bg-white shadow rounded-lg p-4 sm:p-6 hover:shadow-xl transition-shadow">
-                            <table class="w-full border-collapse border border-gray-300 text-sm sm:text-base">
-                                <thead class="bg-gray-100">
-                                    <tr>
-                                        <th class="border border-gray-300 px-2 py-1 text-left">Property</th>
-                                        <th class="border border-gray-300 px-2 py-1 text-left">Guest</th>
-                                        <th class="border border-gray-300 px-2 py-1 text-left">Check-in</th>
-                                        <th class="border border-gray-300 px-2 py-1 text-left">Check-out</th>
-                                        <th class="border border-gray-300 px-2 py-1 text-left">Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="booking-list"></tbody>
-                            </table>
+                            <div class="w-full overflow-x-auto">
+                                <table
+                                    class="w-full border-collapse border border-gray-300 text-sm sm:text-base min-w-max">
+                                    <thead class="bg-gray-100">
+                                        <tr>
+                                            <th class="border border-gray-300 px-2 py-1 text-left">Property</th>
+                                            <th class="border border-gray-300 px-2 py-1 text-left">Guest</th>
+                                            <th class="border border-gray-300 px-2 py-1 text-left">Check-in</th>
+                                            <th class="border border-gray-300 px-2 py-1 text-left">Check-out</th>
+                                            <th class="border border-gray-300 px-2 py-1 text-left">Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="booking-list"></tbody>
+                                </table>
+                            </div>
                             <div
                                 class="mt-6 flex flex-col sm:flex-row justify-center space-y-3 sm:space-y-0 sm:space-x-6">
                                 <button id="edit-button"

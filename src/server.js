@@ -32,6 +32,7 @@ app.use((req, res, next) => {
   authenticationMiddleware()(req, res, () => {
     res.locals.config = config;
     res.locals.user = req.user || null;
+    res.locals.chaindesk_agent_id = process.env.CHAINDESK_AGENT_ID;
     next();
   });
 });

@@ -16,7 +16,7 @@ class DashboardController {
         if (!user.verified) {
           return res.redirect("/dashboard/verification");
         }
-        return res.redirect("/dashboard/guest");
+        return res.redirect("/dashboard/mybooking");
       }
       const redirectMap = {
         owner: "/dashboard/overview",
@@ -96,11 +96,11 @@ class DashboardController {
   }
 
   static accounts(req, res) {
-    res.render("dashboard/accounts");
+    res.render("dashboard/account/accounts");
   }
 
-  static guest(req, res) {
-    res.render("dashboard/guest");
+  static mybookings(req, res) {
+    res.render("dashboard/mybooking/mybookings");
   }
 
   static properties(req, res) {
@@ -148,7 +148,7 @@ module.exports = {
   properties: DashboardController.properties,
   propertiesCreate: DashboardController.propertiesCreate,
   propertiesEdit: DashboardController.propertiesEdit,
-  guest: DashboardController.guest,
+  mybookings: DashboardController.mybookings,
   verification: DashboardController.verification,
   resendVerification: DashboardController.resendVerification,
   bookings: DashboardController.bookings,
