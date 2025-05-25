@@ -14,9 +14,9 @@
   <div class="flex min-h-screen relative">
     <div id="sidebarOverlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden md:hidden" aria-hidden="true">
     </div>
-    <%- include('../../partials/aside') %>
+    <%- include('../partials/aside') %>
       <div class="flex-1 flex flex-col transition-all duration-300 ease-in-out md:ml-64 w-full">
-        <%- include('../../partials/header') %>
+        <%- include('../partials/header') %>
           <main class="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto">
             <h1 class="text-xl sm:text-2xl md:text-3xl font-bold text-center mb-6 sm:mb-8">
               Manage Accounts
@@ -53,6 +53,12 @@
                     <i class="fas fa-trash-alt"></i>
                     <span>Delete</span>
                   </button>
+                  <button id="email-button"
+                    class="bg-indigo-500 w-full text-white px-4 py-2 rounded-lg hover:bg-indigo-600 transition disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+                    disabled>
+                    <i class="fas fa-envelope"></i>
+                    <span>Email</span>
+                  </button>
                 </div>
                 <% } %>
             </div>
@@ -65,11 +71,13 @@
                   <input type="hidden" id="accountId" name="id" />
                   <div>
                     <label for="accountName" class="block text-sm font-medium">Name</label>
-                    <input type="text" id="accountName" name="name" class="w-full border rounded-lg p-2" required />
+                    <input type="text" autocomplete="off" id="accountName" name="name"
+                      class="w-full border rounded-lg p-2" required />
                   </div>
                   <div>
                     <label for="accountEmail" class="block text-sm font-medium">Email</label>
-                    <input type="email" id="accountEmail" name="email" class="w-full border rounded-lg p-2" required />
+                    <input type="email" autocomplete="off" id="accountEmail" name="email"
+                      class="w-full border rounded-lg p-2" required />
                   </div>
                   <div>
                     <label for="accountPassword" class="block text-sm font-medium">Password <span id="passwordNote"
@@ -100,7 +108,7 @@
       </div>
   </div>
 
-  <script src="/js/dashboard/account/accounts.js"></script>
+  <script src="/js/dashboard/accounts.js"></script>
   <script src="/js/script.js"></script>
 </body>
 

@@ -31,41 +31,6 @@ main {
     background-color: #78685c;
 }
 
-.anchor-dark-custom {
-    background-color: transparent;
-    color: #fff;
-}
-
-.anchor-dark-custom:hover {
-    background-color: lightgray;
-    color: #000;
-}
-
-.anchor-custom {
-    background-color: white;
-    color: #000;
-}
-
-.anchor-custom:hover {
-    background-color: lightgray;
-    color: #000;
-}
-
-.custom-button,
-.custom-button.bg-black,
-.custom-button.bg-black:focus,
-.custom-button.bg-black:active {
-    background-color: white !important;
-    color: #000 !important;
-    border: none !important;
-}
-
-.custom-button:hover,
-.custom-button.bg-black:hover {
-    background-color: lightgray !important;
-    color: #000 !important;
-}
-
 .custom-call-to-action {
     background-color: #ffe5b6;
     color: #000;

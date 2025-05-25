@@ -98,17 +98,23 @@ class PropertyTableManager {
       const data = await response.json();
       if (data.success) {
         this.propertyList.innerHTML = "";
-        data.properties.forEach((property) => {
-          const row = document.createElement("tr");
-          row.dataset.id = property.id;
-          row.innerHTML = `
-            <td class="border border-gray-300 px-2 py-1">${property.name}</td>
-            <td class="border border-gray-300 px-2 py-1">${property.price}</td>
-            <td class="border border-gray-300 px-2 py-1">${property.showcase ? "Yes" : "No"
-            }</td>
-          `;
-          this.propertyList.appendChild(row);
-        });
+        if (!data.properties.length) {
+          const noRow = document.createElement("tr");
+          noRow.innerHTML = `<td colspan="3" class="text-center text-gray-500 py-6">No properties found.</td>`;
+          this.propertyList.appendChild(noRow);
+        } else {
+          data.properties.forEach((property) => {
+            const row = document.createElement("tr");
+            row.dataset.id = property.id;
+            row.innerHTML = `
+              <td class="border border-gray-300 px-2 py-1">${property.name}</td>
+              <td class="border border-gray-300 px-2 py-1">${property.price}</td>
+              <td class="border border-gray-300 px-2 py-1">${property.showcase ? "Yes" : "No"
+              }</td>
+            `;
+            this.propertyList.appendChild(row);
+          });
+        }
       } else {
         alert("Failed to fetch properties.");
       }

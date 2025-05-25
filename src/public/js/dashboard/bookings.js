@@ -1,9 +1,11 @@
 class BookingTableManager {
-    constructor(bookingList, editButton, deleteButton) {
+    constructor(bookingList, editButton, deleteButton, emailButton) {
         this.bookingList = bookingList;
         this.editButton = editButton;
         this.deleteButton = deleteButton;
-        this.selectedBookingId = null;
+        this.emailButton = emailButton;
+        this.selectedBookingIds = [];
+        this.selectedBookingEmails = [];
         this.bookings = [];
         this.init();
     }
@@ -17,6 +19,9 @@ class BookingTableManager {
         if (this.deleteButton) {
             this.deleteButton.addEventListener("click", () => this.handleDelete());
         }
+        if (this.emailButton) {
+            this.emailButton.addEventListener("click", () => this.handleEmail());
+        }
         this.fetchBookings();
     }
 
@@ -28,7 +33,9 @@ class BookingTableManager {
             this.renderTable();
             this.editButton.disabled = true;
             this.deleteButton.disabled = true;
-            this.selectedBookingId = null;
+            if (this.emailButton) this.emailButton.disabled = true;
+            this.selectedBookingIds = [];
+            this.selectedBookingEmails = [];
         } catch {
             this.bookingList.innerHTML =
                 `<tr><td colspan="5" class="text-center text-gray-500 py-6">Failed to load bookings.</td></tr>`;
@@ -44,9 +51,9 @@ class BookingTableManager {
         }
         this.bookings.forEach((booking) => {
             const row = document.createElement("tr");
-            row.className =
-                "cursor-pointer hover:bg-gray-100 transition select-none";
+            row.className = "cursor-pointer select-none";
             row.dataset.id = booking.id;
+            row.dataset.email = booking.guest?.email || "";
 
             row.innerHTML = `
         <td class="border border-gray-300 px-2 py-2">${booking.property?.name || "-"}</td>
@@ -64,18 +71,36 @@ class BookingTableManager {
     handleRowClick(e) {
         let tr = e.target.closest("tr");
         if (!tr || !tr.dataset.id) return;
-        this.selectedBookingId = tr.dataset.id;
-        Array.from(this.bookingList.children).forEach((row) =>
-            row.classList.remove("bg-blue-100")
-        );
-        tr.classList.add("bg-blue-100");
-        this.editButton.disabled = false;
-        this.deleteButton.disabled = false;
+        const id = tr.dataset.id;
+        const email = tr.dataset.email;
+
+        if (tr.classList.contains("bg-blue-100")) {
+            tr.classList.remove("bg-blue-100");
+            this.selectedBookingIds = this.selectedBookingIds.filter((selectedId) => selectedId !== id);
+            this.selectedBookingEmails = this.selectedBookingEmails.filter((selectedEmail) => selectedEmail !== email);
+        } else {
+            tr.classList.add("bg-blue-100");
+            this.selectedBookingIds.push(id);
+            this.selectedBookingEmails.push(email);
+        }
+        this.updateButtonStates();
+    }
+
+    updateButtonStates() {
+        this.editButton.disabled = this.selectedBookingIds.length !== 1;
+        this.deleteButton.disabled = this.selectedBookingIds.length === 0;
+        if (this.emailButton) this.emailButton.disabled = this.selectedBookingEmails.length === 0;
+    }
+
+    handleEmail() {
+        if (!this.selectedBookingEmails.length) return;
+        const query = this.selectedBookingEmails.map(encodeURIComponent).join(",");
+        window.location.href = `/dashboard/email?emails=${query}`;
     }
 
     handleEdit() {
-        if (!this.selectedBookingId) return;
-        const booking = this.bookings.find((b) => b.id == this.selectedBookingId);
+        if (this.selectedBookingIds.length !== 1) return;
+        const booking = this.bookings.find((b) => b.id == this.selectedBookingIds[0]);
         if (!booking) return;
         document.getElementById("editBookingId").value = booking.id;
         document.getElementById("editStatus").value = booking.status;
@@ -83,34 +108,38 @@ class BookingTableManager {
     }
 
     handleDelete() {
-        if (!this.selectedBookingId) return;
+        if (!this.selectedBookingIds.length) return;
         if (
             !confirm(
-                "Are you sure you want to delete this booking? This action cannot be undone."
+                "Are you sure you want to delete the selected booking(s)? This action cannot be undone."
             )
         )
             return;
-        this.deleteBooking(this.selectedBookingId);
+        this.deleteBookings(this.selectedBookingIds);
     }
 
-    async deleteBooking(id) {
+    async deleteBookings(ids) {
         try {
-            const res = await fetch(`/api/booking/delete/${id}`, {
-                method: "DELETE",
-                headers: { "Content-Type": "application/json" },
-            });
-            const data = await res.json();
-            if (res.ok && data.success) {
-                alert("Booking deleted and user notified via email.");
-                this.selectedBookingId = null;
-                this.editButton.disabled = true;
-                this.deleteButton.disabled = true;
-                this.fetchBookings();
-            } else {
-                alert(data.message || "Failed to delete booking.");
+            for (const id of ids) {
+                const res = await fetch(`/api/booking/delete/${id}`, {
+                    method: "DELETE",
+                    headers: { "Content-Type": "application/json" },
+                });
+                const data = await res.json();
+                if (!res.ok || !data.success) {
+                    alert(data.message || "Failed to delete booking.");
+                    return;
+                }
             }
+            alert("Booking(s) deleted and user(s) notified via email.");
+            this.selectedBookingIds = [];
+            this.selectedBookingEmails = [];
+            this.editButton.disabled = true;
+            this.deleteButton.disabled = true;
+            if (this.emailButton) this.emailButton.disabled = true;
+            this.fetchBookings();
         } catch {
-            alert("Failed to delete booking.");
+            alert("Failed to delete booking(s).");
         }
     }
 
@@ -160,7 +189,7 @@ class BookingEditModal {
         if (this.closeBtn) {
             this.closeBtn.addEventListener("click", () => this.close());
         }
-        
+
         document.addEventListener("keydown", (e) => {
             if (e.key === "Escape" && !this.modal.classList.contains("hidden")) {
                 this.close();
@@ -182,9 +211,11 @@ class BookingEditModal {
             if (res.ok && data.success) {
                 alert("Booking updated and user notified via email.");
                 this.close();
-                this.tableManager.selectedBookingId = null;
+                this.tableManager.selectedBookingIds = [];
+                this.tableManager.selectedBookingEmails = [];
                 this.tableManager.editButton.disabled = true;
                 this.tableManager.deleteButton.disabled = true;
+                if (this.tableManager.emailButton) this.tableManager.emailButton.disabled = true;
                 this.tableManager.fetchBookings();
             } else {
                 alert(data.message || "Failed to update booking.");
@@ -203,11 +234,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const bookingList = document.getElementById("booking-list");
     const editButton = document.getElementById("edit-button");
     const deleteButton = document.getElementById("delete-button");
+    const emailButton = document.getElementById("email-button");
 
     const tableManager = new BookingTableManager(
         bookingList,
         editButton,
-        deleteButton
+        deleteButton,
+        emailButton
     );
 
     new BookingEditModal(

@@ -1,14 +1,16 @@
 document.addEventListener("DOMContentLoaded", () => {
   const totalPropertiesEl = document.getElementById("total-properties");
   const usersRegisteredEl = document.getElementById("users-registered");
+  const activeReservationsEl = document.getElementById("active-reservations");
 
   async function fetchAndDisplayStats() {
     try {
       const propRes = await fetch("/api/property/listall");
       const propData = await propRes.json();
-      const totalProperties = propData.success && Array.isArray(propData.properties)
-        ? propData.properties.length
-        : 0;
+      const totalProperties =
+        propData.success && Array.isArray(propData.properties)
+          ? propData.properties.length
+          : 0;
       if (totalPropertiesEl) totalPropertiesEl.textContent = totalProperties;
     } catch {
       if (totalPropertiesEl) totalPropertiesEl.textContent = "N/A";
@@ -26,12 +28,13 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       const res = await fetch("/api/booking/active/list");
       const data = await res.json();
-      const activeReservationsEl = document.getElementById("active-reservations");
-      const count = data.success && Array.isArray(data.bookings) ? data.bookings.length : 0;
+      const count =
+        data.success && Array.isArray(data.bookings)
+          ? data.bookings.length
+          : 0;
       if (activeReservationsEl) activeReservationsEl.textContent = count;
     } catch {
-      const activeReservationsEl = document.getElementById("active-reservations");
-      if (activeReservationsEl) activeReservationsEl.textContent = "N/A";
+      if (activeReservationsEl) activeReservationsEl.textContent = "0";
     }
   }
 

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
+    <title>Send Email - <%= config.Business.Name %>
+    </title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet" />
+</head>
+
+<body class="font-sans bg-gray-100">
+    <div class="flex min-h-screen relative">
+        <%- include('../partials/aside') %>
+            <div class="flex-1 flex flex-col transition-all duration-300 ease-in-out md:ml-64 w-full">
+                <%- include('../partials/header') %>
+                    <main class="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto">
+                        <h1 class="text-xl sm:text-2xl md:text-3xl font-bold text-center mb-6 sm:mb-8">
+                            Send Email
+                        </h1>
+                        <div class="bg-white shadow rounded-lg p-4 sm:p-6 max-w-xl mx-auto">
+                            <form id="sendEmailForm" class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium mb-1">To</label>
+                                    <div class="bg-gray-100 rounded p-2 text-sm text-gray-700">
+                                        <% emails.forEach(function(email, idx) { %>
+                                            <span
+                                                class="inline-block bg-blue-100 text-blue-800 rounded px-2 py-1 mr-1 mb-1">
+                                                <%= email %>
+                                            </span>
+                                            <input type="hidden" name="emails" value="<%= email %>">
+                                            <% }) %>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label for="subject" class="block text-sm font-medium mb-1">Subject</label>
+                                    <input type="text" id="subject" name="subject" class="w-full border rounded-lg p-2"
+                                        required />
+                                </div>
+                                <div>
+                                    <label for="message" class="block text-sm font-medium mb-1">Message</label>
+                                    <textarea id="message" name="message" class="w-full border rounded-lg p-2" rows="6"
+                                        required></textarea>
+                                </div>
+                                <div>
+                                    <label for="text" class="block text-sm font-medium mb-1">Plain Text
+                                        (optional)</label>
+                                    <textarea id="text" name="text" class="w-full border rounded-lg p-2"
+                                        rows="4"></textarea>
+                                </div>
+                                <div id="email-error" class="text-red-500 text-sm hidden"></div>
+                                <button type="submit"
+                                    class="bg-blue-500 text-white px-4 py-2 rounded-lg w-full hover:bg-blue-600 transition">
+                                    Send Email
+                                </button>
+                            </form>
+                        </div>
+                    </main>
+            </div>
+    </div>
+    <script src="/js/dashboard/email.js"></script>
+</body>
+
+</html>

@@ -9,13 +9,17 @@ const dashboardRoutes = require("./dashboardRoutes");
 const accountRoutes = require("./accountRoutes");
 const bookingRoutes = require("./bookingRoutes");
 const { get: getProperty } = require("../controllers/propertyController");
+const emailSubscriptionRoutes = require("./emailSubscriptionRoutes");
+const emailRoutes = require("./emailRoutes");
 
+apiRouter.use("/email-subscription", emailSubscriptionRoutes);
 apiRouter.use("/authentication", authenticationRoutes);
 apiRouter.use("/property", propertyRoutes);
 apiRouter.use("/account", accountRoutes);
 apiRouter.use("/booking", bookingRoutes);
 
 pagesRouter.use("/dashboard", dashboardRoutes);
+apiRouter.use("/email", emailRoutes);
 
 pagesRouter.get("/account/register", (req, res) => res.render("pages/register"));
 pagesRouter.get("/account/login", (req, res) => res.render("pages/login"));

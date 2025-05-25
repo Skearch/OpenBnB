@@ -67,8 +67,9 @@
         <h3 class="text-2xl font-bold mb-4">
           <%= config.Website.Subscribe.Title %>
         </h3>
-        <form class="flex justify-center space-x-4 max-w-md mx-auto">
-          <input type="email" placeholder="Email" class="flex-1 p-3 border rounded-lg" required />
+        <form id="subscribe-form" class="flex justify-center space-x-4 max-w-md mx-auto">
+          <input type="email" id="subscribe-email" name="email" autocomplete="email" placeholder="Email"
+            class="flex-1 p-3 border rounded-lg" required />
           <button type="submit" class="custom-call-to-action px-6 py-3 rounded-lg font-semibold">
             <%= config.Website.Subscribe.Button %>
           </button>

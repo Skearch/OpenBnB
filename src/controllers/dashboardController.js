@@ -20,7 +20,7 @@ class DashboardController {
       }
       const redirectMap = {
         owner: "/dashboard/overview",
-        staff: "/dashboard/staff",
+        staff: "/dashboard/subscriptions",
       };
       const destination = redirectMap[role];
       if (destination) {
@@ -96,11 +96,31 @@ class DashboardController {
   }
 
   static accounts(req, res) {
-    res.render("dashboard/account/accounts");
+    res.render("dashboard/accounts");
+  }
+
+  static email(req, res) {
+    let emails = [];
+    if (req.query.emails) {
+      if (Array.isArray(req.query.emails)) {
+        emails = req.query.emails;
+      } else if (typeof req.query.emails === "string") {
+        emails = req.query.emails.split(",");
+      }
+    }
+    res.render("dashboard/email", {
+      emails,
+      config: res.locals.config,
+      user: res.locals.user,
+    });
+  }
+
+  static subscriptions(req, res) {
+    res.render("dashboard/subscriptions");
   }
 
   static mybookings(req, res) {
-    res.render("dashboard/mybooking/mybookings");
+    res.render("dashboard/mybookings");
   }
 
   static properties(req, res) {
@@ -137,7 +157,7 @@ class DashboardController {
   }
 
   static bookings(req, res) {
-    res.render("dashboard/booking/bookings");
+    res.render("dashboard/bookings");
   }
 }
 
@@ -152,4 +172,6 @@ module.exports = {
   verification: DashboardController.verification,
   resendVerification: DashboardController.resendVerification,
   bookings: DashboardController.bookings,
+  subscriptions: DashboardController.subscriptions,
+  email: DashboardController.email,
 };

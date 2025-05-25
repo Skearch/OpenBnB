@@ -10,6 +10,8 @@ const {
   verification,
   bookings,
   mybookings,
+  subscriptions,
+  email
 } = require("../controllers/dashboardController");
 const { logout } = require("../controllers/authenticationController");
 
@@ -19,9 +21,11 @@ dashboardRoutes.get("/redirect", redirect);
 dashboardRoutes.get("/logout", logout);
 dashboardRoutes.get("/verification", authenticationMiddleware("guest"), verification);
 dashboardRoutes.get("/accounts", authenticationMiddleware("owner"), accounts);
-dashboardRoutes.get("/overview", authenticationMiddleware("owner"), overview);
-
+dashboardRoutes.get("/overview", authenticationMiddleware.requireRoles(["owner", "staff"]), overview);
+dashboardRoutes.get("/subscriptions", authenticationMiddleware.requireRoles(["owner", "staff"]), subscriptions);
 dashboardRoutes.get("/mybooking", authenticationMiddleware("guest"), mybookings);
+
+dashboardRoutes.get("/email", authenticationMiddleware.requireRoles(["owner", "staff"]), email);
 
 dashboardRoutes.get(
   "/properties",

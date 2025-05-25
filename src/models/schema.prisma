@@ -23,6 +23,12 @@ model User {
   bookings     Booking[]
 }
 
+model Subscription {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  createdAt DateTime @default(now())
+}
+
 model Property {
   id             Int @id @default(autoincrement())
   ownerId        Int
