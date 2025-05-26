@@ -38,21 +38,6 @@ ADMIN_EMAIL="admin@account.com"
 ADMIN_NAME="admin"
 ADMIN_PASSWORD="admin_password"
 EMAIL_VERIFICATION=true
-
-DATABASE_URL="postgresql://username:password@localhost:5432/database_name"
-JWT_SECRET="your_jwt_secret"
-JWT_REFRESH_SECRET="your_jwt_secret_refresh"
-SMTP_HOST=smtp.example.com
-SMTP_PORT=587
-SMTP_SECURE=false
-SMTP_USER=your_email@example.com
-SMTP_FROM=your_email@example.com
-SMTP_PASS=your_email_password
-PORT=3000
-ADMIN_EMAIL="admin@account.com"
-ADMIN_NAME="admin"
-ADMIN_PASSWORD="admin_password"
-EMAIL_VERIFICATION=true
 ```
 
 4. Configure the application settings: Edit the `config.json` file in the root directory with the following format:
