@@ -45,3 +45,28 @@ main {
     border: 2px solid #78685c;
     color: #78685c;
 }
+
+.reviews-marquee {
+    animation: reviews-marquee 180s linear infinite;
+}
+
+.reviews-marquee.paused {
+    animation-play-state: paused !important;
+}
+
+@keyframes reviews-marquee {
+    0% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
+@media (max-width: 768px) {
+    .reviews-marquee>div {
+        min-width: 260px;
+        max-width: 90vw;
+    }
+}

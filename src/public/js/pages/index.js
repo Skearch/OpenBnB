@@ -92,6 +92,22 @@ class EmailSubscriptionForm {
   }
 }
 
+function setupReviewMarqueeHover() {
+  const marquee = document.querySelector('.reviews-marquee');
+  if (!marquee) return;
+  marquee.addEventListener('mouseover', (e) => {
+    if (e.target.closest('.bg-white.rounded-lg')) {
+      marquee.classList.add('paused');
+    }
+  });
+  marquee.addEventListener('mouseout', (e) => {
+    if (e.target.closest('.bg-white.rounded-lg')) {
+      marquee.classList.remove('paused');
+    }
+  });
+}
+
+
 document.addEventListener("DOMContentLoaded", async () => {
   const showcaseContainer = document.getElementById("showcase-container");
   if (showcaseContainer) {
@@ -114,4 +130,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (subscriptionForm && emailInput) {
     new EmailSubscriptionForm(subscriptionForm, emailInput);
   }
+
+  setupReviewMarqueeHover();
 });
