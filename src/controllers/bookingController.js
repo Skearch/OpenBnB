@@ -95,6 +95,74 @@ class BookingController {
         }
     }
 
+    static async statsMonthly(req, res) {
+        try {
+            const bookings = await prisma.booking.findMany({
+                where: { status: "booked" },
+                select: { createdAt: true }
+            });
+            const now = new Date();
+            const months = [];
+            const counts = [];
+            for (let i = 11; i >= 0; i--) {
+                const start = new Date(now.getFullYear(), now.getMonth() - i, 1);
+                const end = new Date(now.getFullYear(), now.getMonth() - i + 1, 1);
+                const monthLabel = start.toLocaleString('default', { month: 'short', year: '2-digit' });
+                months.push(monthLabel);
+                const monthCount = bookings.filter(b => b.createdAt >= start && b.createdAt < end).length;
+                counts.push(monthCount);
+            }
+            res.json({ months, counts });
+        } catch (err) {
+            res.status(500).json({ months: [], counts: [] });
+        }
+    }
+
+    static async statsRevenue(req, res) {
+        try {
+            const bookings = await prisma.booking.findMany({
+                where: { status: "booked" },
+                select: {
+                    createdAt: true,
+                    property: { select: { price: true } }
+                }
+            });
+            const total = bookings.reduce((sum, b) => sum + (b.property?.price || 0), 0);
+            const average = bookings.length ? total / bookings.length : 0;
+
+            const now = new Date();
+            const months = [];
+            const values = [];
+            for (let i = 11; i >= 0; i--) {
+                const start = new Date(now.getFullYear(), now.getMonth() - i, 1);
+                const end = new Date(now.getFullYear(), now.getMonth() - i + 1, 1);
+                const monthLabel = start.toLocaleString('default', { month: 'short', year: '2-digit' });
+                months.push(monthLabel);
+                const monthBookings = bookings.filter(b => b.createdAt >= start && b.createdAt < end);
+                const monthRevenue = monthBookings.reduce((sum, b) => sum + (b.property?.price || 0), 0);
+                values.push(monthRevenue);
+            }
+
+            res.json({ total, average, months, values });
+        } catch (err) {
+            console.error("Error in statsRevenue:", err);
+            res.status(500).json({ total: 0, average: 0, months: [], values: [] });
+        }
+    }
+
+    static async statsStatus(req, res) {
+        try {
+            const statuses = ["booked", "pending", "cancelled", "declined"];
+            const counts = {};
+            for (const status of statuses) {
+                counts[status] = await prisma.booking.count({ where: { status } });
+            }
+            res.json(counts);
+        } catch (err) {
+            res.status(500).json({ booked: 0, pending: 0, cancelled: 0, declined: 0 });
+        }
+    }
+
     static async createBooking(req, res) {
         try {
             let { propertyId, startDate, endDate } = req.body;
@@ -274,4 +342,7 @@ module.exports = {
     list: BookingController.list,
     deleteBooking: BookingController.deleteBooking,
     editBooking: BookingController.editBooking,
+    statsMonthly: BookingController.statsMonthly,
+    statsRevenue: BookingController.statsRevenue,
+    statsStatus: BookingController.statsStatus
 };

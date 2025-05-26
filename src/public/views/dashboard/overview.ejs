@@ -1,132 +1,88 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, shrink-to-fit=no"
-    />
-    <title>Overview - <%= config.Business.Name %></title>
-    <link
-      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
-      rel="stylesheet"
-    />
-    <link
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
-      rel="stylesheet"
-    />
-  </head>
 
-  <body class="font-sans bg-gray-100">
-    <div class="flex min-h-screen relative">
-      <div
-        id="sidebarOverlay"
-        class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden md:hidden"
-        aria-hidden="true"
-      ></div>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
+  <title>Overview - <%= config.Business.Name %>
+  </title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet" />
+</head>
 
-      <%- include('../partials/aside') %>
-      <div
-        class="flex-1 flex flex-col transition-all duration-300 ease-in-out md:ml-64 w-full"
-      >
-        <%- include('../partials/header') %>
-
-        <main class="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto">
-          <h1
-            class="text-xl sm:text-2xl md:text-3xl font-bold text-center mb-6 sm:mb-8"
-          >
-            Dashboard Overview
-          </h1>
-          <div
-            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6"
-          >
-            <div
-              class="bg-white shadow rounded-lg p-4 sm:p-6 hover:shadow-xl transition-shadow"
-            >
-              <h3
-                class="text-base sm:text-lg md:text-xl font-semibold mb-2 sm:mb-3"
-              >
-                Total Properties
-              </h3>
-              <p
-                id="total-properties"
-                class="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800"
-              ></p>
-            </div>
-
-            <div
-              class="bg-white shadow rounded-lg p-4 sm:p-6 hover:shadow-xl transition-shadow"
-            >
-              <h3
-                class="text-base sm:text-lg md:text-xl font-semibold mb-2 sm:mb-3"
-              >
-                Active Reservations
-              </h3>
-              <p
-                id="active-reservations"
-                class="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800"
-              ></p>
-            </div>
-
-            <div
-              class="bg-white shadow rounded-lg p-4 sm:p-6 hover:shadow-xl transition-shadow"
-            >
-              <h3
-                class="text-base sm:text-lg md:text-xl font-semibold mb-2 sm:mb-3"
-              >
-                Users Registered
-              </h3>
-              <p
-                id="users-registered"
-                class="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800"
-              ></p>
-            </div>
-          </div>
-
-          <div class="mt-6 sm:mt-8 md:mt-10">
-            <h2
-              class="text-lg sm:text-xl md:text-2xl font-semibold mb-4 sm:mb-6"
-            >
-              Recent Activity
-            </h2>
-            <div class="bg-white shadow rounded-lg p-4 sm:p-6">
-              <ul class="divide-y divide-gray-200">
-                <li
-                  class="py-2 sm:py-3 md:py-4 flex flex-col sm:flex-row justify-between text-xs sm:text-sm md:text-base"
-                >
-                  <span class="truncate"
-                    >New property added: "Luxury Villa"</span
-                  >
-                  <span class="text-gray-500 text-xs sm:text-sm mt-1 sm:mt-0"
-                    >2 hours ago</span
-                  >
-                </li>
-                <li
-                  class="py-2 sm:py-3 md:py-4 flex flex-col sm:flex-row justify-between text-xs sm:text-sm md:text-base"
-                >
-                  <span class="truncate"
-                    >Reservation confirmed for "Beach House"</span
-                  >
-                  <span class="text-gray-500 text-xs sm:text-sm mt-1 sm:mt-0"
-                    >5 hours ago</span
-                  >
-                </li>
-                <li
-                  class="py-2 sm:py-3 md:py-4 flex flex-col sm:flex-row justify-between text-xs sm:text-sm md:text-base"
-                >
-                  <span class="truncate">Message received from John Doe</span>
-                  <span class="text-gray-500 text-xs sm:text-sm mt-1 sm:mt-0"
-                    >1 day ago</span
-                  >
-                </li>
-              </ul>
-            </div>
-          </div>
-        </main>
-      </div>
+<body class="font-sans bg-gray-100">
+  <div class="flex min-h-screen relative">
+    <div id="sidebarOverlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden md:hidden" aria-hidden="true">
     </div>
 
-    <script src="/js/dashboard/overview.js"></script>
-    <script src="/js/script.js"></script>
-  </body>
+    <%- include('../partials/aside') %>
+      <div class="flex-1 flex flex-col transition-all duration-300 ease-in-out md:ml-64 w-full">
+        <%- include('../partials/header') %>
+
+          <main class="flex-1 p-2 sm:p-4 lg:p-8 overflow-y-auto">
+            <h1 class="text-xl sm:text-2xl md:text-3xl font-bold text-center mb-4 sm:mb-8">
+              Dashboard Overview
+            </h1>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-4 mb-4">
+              <div class="bg-white shadow rounded-lg p-4 sm:p-6 hover:shadow-xl transition-shadow">
+                <h3 class="text-base sm:text-lg md:text-xl font-semibold mb-2 sm:mb-3">
+                  Total Properties
+                </h3>
+                <p id="total-properties" class="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800"></p>
+              </div>
+              <div class="bg-white shadow rounded-lg p-4 sm:p-6 hover:shadow-xl transition-shadow">
+                <h3 class="text-base sm:text-lg md:text-xl font-semibold mb-2 sm:mb-3">
+                  Active Reservations
+                </h3>
+                <p id="active-reservations" class="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800"></p>
+              </div>
+              <div class="bg-white shadow rounded-lg p-4 sm:p-6 hover:shadow-xl transition-shadow">
+                <h3 class="text-base sm:text-lg md:text-xl font-semibold mb-2 sm:mb-3">
+                  Users Registered
+                </h3>
+                <p id="users-registered" class="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800"></p>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-4">
+              <div class="bg-white shadow rounded-lg p-4 flex flex-col min-h-0" style="height:340px;">
+                <h3 class="text-lg font-semibold mb-2">Bookings Per Month</h3>
+                <div class="flex-1 min-h-0 relative">
+                  <canvas id="bookingsPerMonthChart" class="w-full h-full"></canvas>
+                </div>
+              </div>
+              <div class="bg-white shadow rounded-lg p-4 flex flex-col min-h-0" style="height:340px;">
+                <h3 class="text-lg font-semibold mb-2">Revenue Overview</h3>
+                <div class="flex flex-row space-x-8 mb-2">
+                  <div>Total Revenue: <span id="total-revenue" class="font-bold"></span></div>
+                  <div>Average Booking Value: <span id="avg-booking-value" class="font-bold"></span></div>
+                </div>
+                <div class="flex-1 min-h-0 relative">
+                  <canvas id="revenuePerMonthChart" class="w-full h-full"></canvas>
+                </div>
+              </div>
+              <div class="bg-white shadow rounded-lg p-4 flex flex-col min-h-0" style="height:260px;">
+                <h3 class="text-lg font-semibold mb-2">Occupancy Rate</h3>
+                <div class="flex flex-row space-x-8 mt-2 mb-2">
+                  <div>Of all available nights: <span id="occupancy-rate-value" class="font-bold"></span></div>
+                </div>
+                <div class="flex-1 min-h-0 relative">
+                  <canvas id="occupancyRateChart" class="w-full h-full"></canvas>
+                </div>
+              </div>
+              <div class="bg-white shadow rounded-lg p-4 flex flex-col min-h-0" style="height:260px;">
+                <h3 class="text-lg font-semibold mb-2">Booking Status Distribution</h3>
+                <div class="flex-1 min-h-0 relative">
+                  <canvas id="bookingStatusPieChart" class="w-full h-full"></canvas>
+                </div>
+              </div>
+          </main>
+      </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="/js/dashboard/overview.js"></script>
+  <script src="/js/script.js"></script>
+</body>
+
 </html>

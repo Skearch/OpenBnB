@@ -170,6 +170,47 @@ class PropertyController {
     }
   }
 
+  static async statusOccupancy(req, res) {
+    try {
+      const properties = await prisma.property.findMany({
+        select: { id: true }
+      });
+
+      const bookings = await prisma.booking.findMany({
+        where: { status: "booked" },
+        select: { propertyId: true, startDate: true, endDate: true }
+      });
+
+      let totalAvailableNights = 0;
+      let totalBookedNights = 0;
+      const today = new Date();
+      for (const property of properties) {
+
+        const propertyBookings = bookings.filter(b => b.propertyId === property.id);
+        let earliest = propertyBookings.length
+          ? propertyBookings.reduce((min, b) => b.startDate < min ? b.startDate : min, propertyBookings[0].startDate)
+          : null;
+
+        if (!earliest) continue;
+        const availableNights = Math.ceil((today - new Date(earliest)) / (1000 * 60 * 60 * 24));
+        totalAvailableNights += availableNights;
+      }
+
+      for (const booking of bookings) {
+        const nights = Math.ceil((new Date(booking.endDate) - new Date(booking.startDate)) / (1000 * 60 * 60 * 24));
+        totalBookedNights += nights;
+      }
+
+      const rate = totalAvailableNights > 0
+        ? Math.round((totalBookedNights / totalAvailableNights) * 100)
+        : 0;
+
+      res.json({ rate });
+    } catch (err) {
+      res.status(500).json({ rate: 0 });
+    }
+  }
+
   static #parseImagePaths(imagePaths) {
     if (typeof imagePaths === "string") {
       try {
@@ -397,4 +438,5 @@ module.exports = {
   toImageUrls: PropertyController.toImageUrls,
   cloneProperty: PropertyController.cloneProperty,
   upload,
+  statusOccupancy: PropertyController.statusOccupancy,
 };

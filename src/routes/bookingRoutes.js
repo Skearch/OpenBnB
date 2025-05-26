@@ -8,7 +8,11 @@ const {
     editBooking,
     listGuestBookings,
     cancelBooking,
-    listActiveReservations
+    listActiveReservations,
+
+    statsMonthly,
+    statsRevenue,
+    statsStatus
 } = require("../controllers/bookingController");
 const authenticationMiddleware = require("../middleware/authenticationMiddleware");
 
@@ -23,6 +27,10 @@ router.delete("/guest/cancel/:id", authenticationMiddleware("guest"), cancelBook
 router.delete("/delete/:id", authenticationMiddleware("owner"), deleteBooking);
 router.put("/edit/:id", authenticationMiddleware("owner"), editBooking);
 
-router.get("/active/list", authenticationMiddleware("owner"), listActiveReservations);
+router.get("/active/list", authenticationMiddleware.requireRoles(["owner", "staff"]), listActiveReservations);
+
+router.get("/stats/monthly", authenticationMiddleware.requireRoles(["owner", "staff"]), statsMonthly);
+router.get("/stats/revenue", authenticationMiddleware.requireRoles(["owner", "staff"]), statsRevenue);
+router.get("/stats/status", authenticationMiddleware.requireRoles(["owner", "staff"]), statsStatus);
 
 module.exports = router;

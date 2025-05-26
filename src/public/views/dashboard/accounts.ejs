@@ -31,7 +31,11 @@
                       <th class="border border-gray-300 px-2 py-1 text-left">Role</th>
                     </tr>
                   </thead>
-                  <tbody id="admin-account-list"></tbody>
+                  <tbody id="admin-account-list">
+                    <tr id="no-accounts-row" class="hidden">
+                      <td colspan="3" class="text-center text-gray-500 py-6">No accounts found.</td>
+                    </tr>
+                  </tbody>
                 </table>
               </div>
               <% if (user && user.role==='owner' ) { %>

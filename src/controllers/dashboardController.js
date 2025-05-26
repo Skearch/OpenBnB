@@ -20,7 +20,7 @@ class DashboardController {
       }
       const redirectMap = {
         owner: "/dashboard/overview",
-        staff: "/dashboard/subscriptions",
+        staff: "/dashboard/overview",
       };
       const destination = redirectMap[role];
       if (destination) {

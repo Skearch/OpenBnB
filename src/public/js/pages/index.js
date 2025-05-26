@@ -8,9 +8,7 @@ class ShowcaseRenderer {
     this.container.innerHTML = "";
     properties.forEach((property) => {
       const formattedPrice = property.price
-        ? Number(property.price).toLocaleString(undefined, {
-          maximumFractionDigits: 0,
-        })
+        ? Number(property.price).toLocaleString(undefined, { maximumFractionDigits: 0 })
         : "0";
       const propertyCard = this.createPropertyCard(property, formattedPrice);
       this.container.insertAdjacentHTML("beforeend", propertyCard);
@@ -18,9 +16,7 @@ class ShowcaseRenderer {
   }
 
   createPropertyCard(property, formattedPrice) {
-    const imageSrc = property.featuredImage
-      ? property.featuredImage
-      : "https://placehold.co/300x200";
+    const imageSrc = property.featuredImage || "https://placehold.co/300x200";
     const name = property.name || "Untitled";
     const currency = property.currencySymbol || "$";
     const checkInOutTitle = property.checkInOutTitle || "stay";
@@ -48,21 +44,24 @@ class ShowcaseRenderer {
 }
 
 class EmailSubscriptionForm {
+  #form;
+  #emailInput;
+
   constructor(form, emailInput) {
-    this.form = form;
-    this.emailInput = emailInput;
+    this.#form = form;
+    this.#emailInput = emailInput;
     this.#bindEvents();
   }
 
   #bindEvents() {
-    if (this.form) {
-      this.form.addEventListener("submit", (e) => this.#handleSubmit(e));
+    if (this.#form) {
+      this.#form.addEventListener("submit", (e) => this.#handleSubmit(e));
     }
   }
 
   async #handleSubmit(e) {
     e.preventDefault();
-    const email = this.emailInput.value.trim();
+    const email = this.#emailInput.value.trim();
     if (!email) return;
 
     try {
@@ -84,7 +83,7 @@ class EmailSubscriptionForm {
 
   #onSuccess() {
     alert("Subscribed successfully!");
-    this.emailInput.value = "";
+    this.#emailInput.value = "";
   }
 
   #onError(message) {
@@ -92,21 +91,27 @@ class EmailSubscriptionForm {
   }
 }
 
-function setupReviewMarqueeHover() {
-  const marquee = document.querySelector('.reviews-marquee');
-  if (!marquee) return;
-  marquee.addEventListener('mouseover', (e) => {
-    if (e.target.closest('.bg-white.rounded-lg')) {
-      marquee.classList.add('paused');
-    }
-  });
-  marquee.addEventListener('mouseout', (e) => {
-    if (e.target.closest('.bg-white.rounded-lg')) {
-      marquee.classList.remove('paused');
-    }
-  });
-}
+class ReviewMarqueeManager {
+  constructor(marqueeSelector = '.reviews-marquee', cardSelector = '.bg-white.rounded-lg') {
+    this.marquee = document.querySelector(marqueeSelector);
+    this.cardSelector = cardSelector;
+    this.#bindEvents();
+  }
 
+  #bindEvents() {
+    if (!this.marquee) return;
+    this.marquee.addEventListener('mouseover', (e) => {
+      if (e.target.closest(this.cardSelector)) {
+        this.marquee.classList.add('paused');
+      }
+    });
+    this.marquee.addEventListener('mouseout', (e) => {
+      if (e.target.closest(this.cardSelector)) {
+        this.marquee.classList.remove('paused');
+      }
+    });
+  }
+}
 
 document.addEventListener("DOMContentLoaded", async () => {
   const showcaseContainer = document.getElementById("showcase-container");
@@ -115,7 +120,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     try {
       const res = await fetch("/api/property/listshowcase?limit=3&page=1");
       const data = await res.json();
-      if (data.success && Array.isArray(data.properties)) {
+      if (data.success && Array.isArray(data.properties) && data.properties.length > 0) {
         renderer.render(data.properties);
       } else {
         renderer.renderError("No showcase properties found.");
@@ -131,5 +136,5 @@ document.addEventListener("DOMContentLoaded", async () => {
     new EmailSubscriptionForm(subscriptionForm, emailInput);
   }
 
-  setupReviewMarqueeHover();
+  new ReviewMarqueeManager();
 });

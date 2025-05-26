@@ -21,6 +21,10 @@ apiRouter.use("/booking", bookingRoutes);
 pagesRouter.use("/dashboard", dashboardRoutes);
 apiRouter.use("/email", emailRoutes);
 
+pagesRouter.get("/business/about", (req, res) => res.render("pages/about"));
+pagesRouter.get("/business/faq", (req, res) => res.render("pages/faq"));
+pagesRouter.get("/business/terms", (req, res) => res.render("pages/terms"));
+
 pagesRouter.get("/account/register", (req, res) => res.render("pages/register"));
 pagesRouter.get("/account/login", (req, res) => res.render("pages/login"));
 

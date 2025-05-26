@@ -11,6 +11,7 @@ const {
   deleteProperty,
   cloneProperty,
   upload,
+  statusOccupancy,
 } = require("../controllers/propertyController");
 
 router.post("/clone/:id", authenticationMiddleware("owner"), cloneProperty);
@@ -40,6 +41,9 @@ router.put(
   ]),
   editProperty
 );
+
+router.get(
+  "/stats/occupancy", authenticationMiddleware.requireRoles(["owner", "staff"]), statusOccupancy);
 
 router.delete("/delete/:id", authenticationMiddleware("owner"), deleteProperty);
 
