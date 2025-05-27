@@ -6,7 +6,8 @@
     "scripts": {
         "build": "echo 'No build step required'",
         "migrate": "npx prisma migrate deploy --schema=src/models/schema.prisma",
-        "start": "npm run migrate && node src/server.js"
+        "start": "npm run migrate && node src/server.js",
+        "postinstall": "npx prisma generate --schema=src/models/schema.prisma"
     },
     "main": "src/server.js",
     "dependencies": {
