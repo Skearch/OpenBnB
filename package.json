@@ -3,12 +3,12 @@
     "version": "1.0.0",
     "description": "Open Source Airbnb Booking and Management System for businesses and individuals.",
     "author": "Skearch",
-    "main": "server.js",
     "scripts": {
         "build": "echo 'No build step required'",
         "migrate": "npx prisma migrate deploy --schema=src/models/schema.prisma",
         "start": "npm run migrate && node src/server.js"
     },
+    "main": "src/server.js",
     "dependencies": {
         "@prisma/client": "latest",
         "bcrypt": "latest",
