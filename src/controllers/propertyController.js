@@ -279,6 +279,49 @@ class PropertyController {
     }
   }
 
+  static async listCleaningGaps(req, res) {
+    try {
+      const propertyId = parseInt(req.params.id, 10);
+      if (isNaN(propertyId)) {
+        return res.status(400).json({ success: false, message: "Invalid property ID" });
+      }
+
+      const property = await prisma.property.findUnique({
+        where: { id: propertyId },
+        select: { checkInTime: true, checkOutTime: true }
+      });
+      if (!property) {
+        return res.status(404).json({ success: false, message: "Property not found" });
+      }
+
+      const bookings = await prisma.booking.findMany({
+        where: { propertyId, status: { in: ["booked", "pending"] } },
+        orderBy: { startDate: "asc" }
+      });
+
+      const gaps = [];
+      let prevEnd = null;
+
+      for (let i = 0; i < bookings.length; i++) {
+        const booking = bookings[i];
+        if (prevEnd) {
+          if (prevEnd < booking.startDate) {
+            gaps.push({
+              start: prevEnd.toISOString().slice(0, 10) + "T" + (property.checkOutTime || "11:00"),
+              end: booking.startDate.toISOString().slice(0, 10) + "T" + (property.checkInTime || "14:00")
+            });
+          }
+        }
+        prevEnd = booking.endDate;
+      }
+
+      res.json({ success: true, gaps });
+    } catch (err) {
+      console.error("Error in listCleaningGaps:", err);
+      res.status(500).json({ success: false, message: "Server error" });
+    }
+  }
+
   static async editProperty(req, res) {
     try {
       const { id } = req.params;
@@ -439,4 +482,5 @@ module.exports = {
   cloneProperty: PropertyController.cloneProperty,
   upload,
   statusOccupancy: PropertyController.statusOccupancy,
+  listCleaningGaps: PropertyController.listCleaningGaps
 };

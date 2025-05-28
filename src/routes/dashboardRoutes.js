@@ -11,7 +11,8 @@ const {
   bookings,
   mybookings,
   subscriptions,
-  email
+  email,
+  schedule
 } = require("../controllers/dashboardController");
 const { logout } = require("../controllers/authenticationController");
 
@@ -47,6 +48,12 @@ dashboardRoutes.get(
   "/properties",
   authenticationMiddleware("owner"),
   properties
+);
+
+dashboardRoutes.get(
+  "/schedule",
+  authenticationMiddleware.requireRoles(["owner", "staff"]),
+  schedule
 );
 
 dashboardRoutes.get("/bookings", authenticationMiddleware("owner"), bookings);

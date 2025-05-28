@@ -12,6 +12,7 @@ const {
   cloneProperty,
   upload,
   statusOccupancy,
+  listCleaningGaps
 } = require("../controllers/propertyController");
 
 router.post("/clone/:id", authenticationMiddleware("owner"), cloneProperty);
@@ -40,6 +41,12 @@ router.put(
     { name: "images", maxCount: 4 },
   ]),
   editProperty
+);
+
+router.get(
+  "/cleaning-gaps/:id",
+  authenticationMiddleware.requireRoles(["owner", "staff"]),
+  listCleaningGaps
 );
 
 router.get(

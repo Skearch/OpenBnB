@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Cleaning Gaps - <%= config.Business.Name %>
+    </title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+</head>
+
+<body class="font-sans bg-gray-100" <% if (propertyId) { %> data-property-id="<%= propertyId %>"<% } %>>
+            <div class="flex min-h-screen relative">
+                <div id="sidebarOverlay" class="fixed inset-0 bg-black bg-opacity-40 z-30 hidden md:hidden"></div>
+                <%- include('../partials/aside') %>
+                    <div class="flex-1 flex flex-col transition-all duration-300 ease-in-out md:ml-64 w-full">
+                        <%- include('../partials/header') %>
+                            <main class="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto">
+                                <h1 class="text-xl sm:text-2xl md:text-3xl font-bold text-center mb-6 sm:mb-8">Cleaning
+                                    Gaps</h1>
+                                <% if (!propertyId) { %>
+                                    <form method="get" action="/dashboard/schedule" class="mb-4 max-w-md mx-auto">
+                                        <label for="propertyId" class="block mb-2 font-semibold">Select
+                                            Property:</label>
+                                        <select name="propertyId" id="propertyId" class="border rounded p-2 w-full"
+                                            required>
+                                            <option value="">-- Select --</option>
+                                            <% if (properties && properties.length) { properties.forEach(function(p) {
+                                                %>
+                                                <option value="<%= p.id %>">
+                                                    <%= p.name || ('Property #' + p.id) %>
+                                                </option>
+                                                <% }) } %>
+                                        </select>
+                                        <button type="submit"
+                                            class="mt-4 w-full px-4 py-2 bg-blue-500 text-white rounded">View</button>
+                                    </form>
+                                    <% } else { %>
+                                        <h2 class="text-lg mb-4 text-center">For Property #<%= propertyId %>
+                                        </h2>
+                                        <div
+                                            class="bg-white shadow rounded-lg p-4 sm:p-6 hover:shadow-xl transition-shadow mb-6">
+                                            <div class="w-full overflow-x-auto">
+                                                <table
+                                                    class="w-full border-collapse border border-gray-300 text-sm sm:text-base min-w-max">
+                                                    <thead class="bg-gray-100">
+                                                        <tr>
+                                                            <th class="border border-gray-300 px-2 py-1">Gap Start</th>
+                                                            <th class="border border-gray-300 px-2 py-1">Gap End</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="gaps-table-body">
+                                                        <tr>
+                                                            <td colspan="2" class="text-center text-gray-500 py-6">
+                                                                Loading...
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                        <div
+                                            class="flex flex-col sm:flex-row justify-center space-y-3 sm:space-y-0 sm:space-x-6">
+                                            <a href="/dashboard/schedule"
+                                                class="text-blue-600 hover:underline text-center">Choose another
+                                                property</a>
+                                            <a href="/dashboard/properties"
+                                                class="text-blue-600 hover:underline text-center">Back to Properties</a>
+                                        </div>
+                                        <script src="/js/dashboard/schedule.js"></script>
+                                        <% } %>
+                            </main>
+                    </div>
+            </div>
+            <script src="/js/script.js"></script>
+</body>
+
+</html>

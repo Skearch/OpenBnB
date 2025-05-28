@@ -61,6 +61,22 @@ class DashboardController {
     res.json({ message: "Verification code resent" });
   }
 
+  static async schedule(req, res) {
+    const propertyId = req.query.propertyId || "";
+    let properties = [];
+    if (!propertyId) {
+      properties = await prisma.property.findMany({
+        select: { id: true, name: true }
+      });
+    }
+    res.render("dashboard/schedule", {
+      propertyId,
+      properties,
+      config: res.locals.config,
+      user: res.locals.user,
+    });
+  }
+
   static async verification(req, res) {
     if (process.env.EMAIL_VERIFICATION !== 'true') {
       return res.redirect('/dashboard/guest');
@@ -174,4 +190,5 @@ module.exports = {
   bookings: DashboardController.bookings,
   subscriptions: DashboardController.subscriptions,
   email: DashboardController.email,
+  schedule: DashboardController.schedule,
 };
